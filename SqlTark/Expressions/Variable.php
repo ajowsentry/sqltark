@@ -9,10 +9,10 @@ class Variable extends BaseExpression
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * @param string
+     * @return string
      */
     public function getName(): string
     {

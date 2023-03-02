@@ -24,7 +24,7 @@ final class Expressions
     /**
      * @param string $name
      * @param ?string $wrap
-     * @return Column
+     * @return Variable
      */
     public static function variable(string $name = null, ?string $wrap = null): Variable
     {
@@ -34,7 +34,7 @@ final class Expressions
     /**
      * @param string $value
      * @param ?string $wrap
-     * @return Column
+     * @return Literal
      */
     public static function literal(string $value, ?string $wrap = null): Literal
     {
