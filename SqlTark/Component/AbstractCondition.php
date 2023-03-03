@@ -28,10 +28,9 @@ abstract class AbstractCondition extends AbstractComponent
      * @param bool $value
      * @return static
      */
-    public function setOr(bool $value): static
+    public function setOr(bool $value): void
     {
         $this->isOr = $value;
-        return $this;
     }
 
     /**
@@ -46,9 +45,8 @@ abstract class AbstractCondition extends AbstractComponent
      * @param bool $value
      * @return static
      */
-    public function setNot(bool $value): static
+    public function setNot(bool $value): void
     {
         $this->isNot = $value;
-        return $this;
     }
 }

@@ -19,12 +19,11 @@ class LimitClause extends AbstractComponent
 
     /**
      * @param int $value
-     * @return static
+     * @return void
      */
-    public function setLimit(int $value): static
+    public function setLimit(int $value): void
     {
         $this->limit = $value < 0 ? 0 : $value;
-        return $this;
     }
 
     /**

@@ -23,10 +23,9 @@ abstract class AbstractComponent
      * @param ComponentType $componentType
      * @return static
      */
-    public function setComponentType(ComponentType $componentType): static
+    public function setComponentType(ComponentType $componentType): void
     {
         $this->componentType = $componentType;
-        return $this;
     }
 
     public final function __construct() { }

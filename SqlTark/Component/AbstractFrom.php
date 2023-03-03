@@ -23,9 +23,8 @@ abstract class AbstractFrom extends AbstractComponent
      * @param ?string $value
      * @return static
      */
-    public function setAlias(?string $value): static
+    public function setAlias(?string $value): void
     {
         $this->alias = $value;
-        return $this;
     }
 }

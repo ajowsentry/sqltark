@@ -19,12 +19,11 @@ class OffsetClause extends AbstractComponent
 
     /**
      * @param int $value
-     * @return static
+     * @return void
      */
-    public function setOffset(int $value): static
+    public function setOffset(int $value): void
     {
         $this->offset = $value < 0 ? 0 : $value;
-        return $this;
     }
 
     /**
