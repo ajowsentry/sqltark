@@ -26,7 +26,7 @@ abstract class AbstractCondition extends AbstractComponent
 
     /**
      * @param bool $value
-     * @return static
+     * @return void
      */
     public function setOr(bool $value): void
     {
@@ -43,7 +43,7 @@ abstract class AbstractCondition extends AbstractComponent
 
     /**
      * @param bool $value
-     * @return static
+     * @return void
      */
     public function setNot(bool $value): void
     {

@@ -21,7 +21,7 @@ abstract class AbstractComponent
 
     /**
      * @param ComponentType $componentType
-     * @return static
+     * @return void
      */
     public function setComponentType(ComponentType $componentType): void
     {

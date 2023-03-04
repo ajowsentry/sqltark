@@ -21,7 +21,7 @@ abstract class AbstractFrom extends AbstractComponent
 
     /**
      * @param ?string $value
-     * @return static
+     * @return void
      */
     public function setAlias(?string $value): void
     {
