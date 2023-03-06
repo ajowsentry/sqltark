@@ -23,7 +23,7 @@ class Literal extends BaseExpression
      * @param mixed $value
      * @return static
      */
-    public function setValue($value): static
+    public function setValue(mixed $value): static
     {
         $this->value = $value;
         return $this;

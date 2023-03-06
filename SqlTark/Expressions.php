@@ -8,6 +8,7 @@ use SqlTark\Expressions\Raw;
 use SqlTark\Expressions\Column;
 use SqlTark\Expressions\Literal;
 use SqlTark\Expressions\Variable;
+use SqlTark\Expressions\BaseExpression;
 
 final class Expressions
 {
@@ -32,20 +33,21 @@ final class Expressions
     }
 
     /**
-     * @param string $value
+     * @param mixed $value
      * @param ?string $wrap
      * @return Literal
      */
-    public static function literal(string $value, ?string $wrap = null): Literal
+    public static function literal(mixed $value, ?string $wrap = null): Literal
     {
         return (new Literal($value))->wrap($wrap);
     }
 
     /**
      * @param string $expression
+     * @param list<BaseExpression|Query>
      * @return Raw
      */
-    public static function raw(string $expression): Raw
+    public static function raw(string $expression, iterable $bindings = []): Raw
     {
         return new Raw($expression);
     }

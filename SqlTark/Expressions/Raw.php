@@ -14,7 +14,7 @@ class Raw extends BaseExpression
     protected string $expression;
 
     /**
-     * @var iterable<BaseExpression|Query> $bindings
+     * @var list<BaseExpression|Query> $bindings
      */
     protected iterable $bindings;
 
@@ -37,7 +37,7 @@ class Raw extends BaseExpression
     }
 
     /**
-     * @return iterable<BaseExpression|Query>
+     * @return list<BaseExpression|Query>
      */
     public function getBindings(): iterable
     {
@@ -45,7 +45,7 @@ class Raw extends BaseExpression
     }
 
     /**
-     * @param iterable<BaseExpression|Query> $value
+     * @param list<BaseExpression|Query> $value
      * @return static
      */
     public function setBindings(iterable $value): static
@@ -56,7 +56,7 @@ class Raw extends BaseExpression
 
     /**
      * @param string $expression
-     * @param iterable<BaseExpression|Query> $bindings
+     * @param list<BaseExpression|Query> $bindings
      */
     public function __construct(string $expression, iterable $bindings = [])
     {
