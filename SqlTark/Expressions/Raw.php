@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
+use SqlTark\Query;
+
 class Raw extends BaseExpression
 {
     /**
@@ -12,7 +14,7 @@ class Raw extends BaseExpression
     protected string $expression;
 
     /**
-     * @var iterable<BaseExpression> $bindings
+     * @var iterable<BaseExpression|Query> $bindings
      */
     protected iterable $bindings;
 
@@ -35,7 +37,7 @@ class Raw extends BaseExpression
     }
 
     /**
-     * @return iterable<BaseExpression>
+     * @return iterable<BaseExpression|Query>
      */
     public function getBindings(): iterable
     {
@@ -43,7 +45,7 @@ class Raw extends BaseExpression
     }
 
     /**
-     * @param iterable<BaseExpression> $value
+     * @param iterable<BaseExpression|Query> $value
      * @return static
      */
     public function setBindings(iterable $value): static
@@ -54,7 +56,7 @@ class Raw extends BaseExpression
 
     /**
      * @param string $expression
-     * @param iterable<BaseExpression> $bindings
+     * @param iterable<BaseExpression|Query> $bindings
      */
     public function __construct(string $expression, iterable $bindings = [])
     {
