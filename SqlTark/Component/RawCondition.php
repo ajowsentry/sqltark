@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace SqlTark\Component;
 
-use SplFixedArray;
-use SqlTark\Expressions\BaseExpression;
 use SqlTark\Helper;
+use SqlTark\Expressions\BaseExpression;
+use SqlTark\Query;
 
 class RawCondition extends AbstractCondition
 {
     /**
      * @var string $expression
      */
-    protected $expression;
+    protected string $expression;
 
     /**
-     * @var list<BaseExpression> $bindings
+     * @var list<BaseExpression|Query> $bindings
      */
-    protected $bindings;
+    protected iterable $bindings;
 
     public function getExpression(): string
     {
@@ -35,7 +35,7 @@ class RawCondition extends AbstractCondition
     }
 
     /**
-     * @return list<BaseExpression>
+     * @return list<BaseExpression|Query>
      */
     public function getBindings(): iterable
     {
@@ -43,7 +43,7 @@ class RawCondition extends AbstractCondition
     }
 
     /**
-     * @param list<BaseExpression> $value
+     * @param list<BaseExpression|Query> $value
      * @return void
      */
     public function setBindings(iterable $value): void

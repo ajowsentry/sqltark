@@ -13,12 +13,12 @@ class InsertClause extends AbstractFrom
     /**
      * @var list<string> $columns
      */
-    protected $columns;
+    protected iterable $columns;
 
     /**
-     * @var list<array<string,BaseExpression|Query>> $values
+     * @var list<list<BaseExpression|Query>> $values
      */
-    protected $values;
+    protected iterable $values;
 
     /**
      * @return list<string>
@@ -46,7 +46,7 @@ class InsertClause extends AbstractFrom
     }
 
     /**
-     * @param list<array<string,BaseExpression|Query>> $value
+     * @param list<list<BaseExpression|Query>> $value
      * @return void
      */
     public function setValues($value): void

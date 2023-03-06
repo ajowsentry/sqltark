@@ -38,7 +38,6 @@ class OrderClause extends AbstractOrder
 
     /**
      * @return bool
-     * @return bool
      */
     public function isAscending(): bool
     {

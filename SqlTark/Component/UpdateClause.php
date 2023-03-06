@@ -13,7 +13,7 @@ class UpdateClause extends AbstractFrom
     /**
      * @var array<string,BaseExpression|Query> $values
      */
-    protected $value;
+    protected array $value;
 
     /**
      * @return array<string,BaseExpression|Query>

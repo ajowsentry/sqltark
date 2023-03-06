@@ -9,7 +9,7 @@ abstract class AbstractFrom extends AbstractComponent
     /**
      * @var ?string $alias
      */
-    protected $alias;
+    protected ?string $alias;
 
     /**
      * @return ?string

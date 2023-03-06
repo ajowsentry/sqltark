@@ -13,7 +13,7 @@ class InCondition extends AbstractCondition
     /**
      * @var BaseExpression|Query $column
      */
-    protected $column;
+    protected BaseExpression|Query $column;
 
     /**
      * @var list<BaseExpression>|Query $values

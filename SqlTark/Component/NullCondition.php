@@ -13,7 +13,7 @@ class NullCondition extends AbstractCondition
     /**
      * @var BaseExpression|Query $column
      */
-    protected $column;
+    protected BaseExpression|Query $column;
 
     /**
      * @return BaseExpression|Query

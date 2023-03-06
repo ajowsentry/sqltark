@@ -4,26 +4,28 @@ declare(strict_types=1);
 
 namespace SqlTark\Query\Traits;
 
+use Closure;
+use DateTime;
+use SqlTark\Helper;
+use SqlTark\Expressions;
 use InvalidArgumentException;
-use SplFixedArray;
+use SqlTark\Component\RawColumn;
+use SqlTark\Query\AbstractQuery;
 use SqlTark\Component\ColumnClause;
 use SqlTark\Component\ComponentType;
-use SqlTark\Component\RawColumn;
-use SqlTark\Expressions;
 use SqlTark\Expressions\BaseExpression;
-use SqlTark\Helper;
-use SqlTark\Query\BaseQuery;
+use SqlTark\Query\QueryInterface;
 
 trait GroupBy
 {
     /**
-     * @param scalar|Query ...$columns
+     * @param null|scalar|DateTime|Query|(Closure(QueryInterface):void) ...$columns
      * @return static Self object
      */
     public function groupBy(mixed ...$columns): static
     {
-        if (func_num_args() == 1 && is_iterable($columns[0])) {
-            $columns = $columns[0];
+        if (func_num_args() == 1 && is_iterable(reset($columns))) {
+            $columns = reset($columns);
         }
 
         foreach ($columns as $column) {
@@ -33,7 +35,7 @@ trait GroupBy
             $component = new ColumnClause;
             $component->setColumn($column);
 
-            /** @var BaseQuery $this */
+            /** @var AbstractQuery $this */
             $this->addComponent(ComponentType::GroupBy, $component);
         }
 
@@ -42,7 +44,7 @@ trait GroupBy
 
     /**
      * @param string $expression
-     * @param scalar|BaseExpression ...$bindings
+     * @param null|scalar|DateTime|Query|(Closure(QueryInterface):void) ...$bindings
      * @return static Self object
      */
     public function groupByRaw(string $expression, ...$bindings)

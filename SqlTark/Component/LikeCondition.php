@@ -13,7 +13,7 @@ class LikeCondition extends AbstractCondition
     /**
      * @var BaseExpression|Query $column
      */
-    protected $column;
+    protected BaseExpression|Query $column;
 
     /**
      * @var LikeType $type
@@ -23,7 +23,7 @@ class LikeCondition extends AbstractCondition
     /**
      * @var string $value
      */
-    protected $value;
+    protected string $value;
 
     /**
      * @var bool $caseSensitive

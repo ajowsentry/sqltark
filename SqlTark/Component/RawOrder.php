@@ -13,12 +13,12 @@ class RawOrder extends AbstractOrder
     /**
      * @var string $expression
      */
-    protected $expression;
+    protected string $expression;
 
     /**
      * @var list<BaseExpression|Query> $bindings
      */
-    protected $bindings;
+    protected iterable $bindings;
 
     /**
      * @return string

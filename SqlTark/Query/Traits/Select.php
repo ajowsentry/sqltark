@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SqlTark\Query\Traits;
 
-use SplFixedArray;
+use DateTime;
 use SqlTark\Helper;
 use SqlTark\Expressions;
 use InvalidArgumentException;
@@ -39,10 +39,10 @@ trait Select
     }
 
     /**
-     * @param scalar|BaseExpression|Query ...$columns
+     * @param null|scalar|DateTime|Query|(Closure(QueryInterface):void) ...$columns
      * @return static Self object
      */
-    public function select(...$columns): static
+    public function select(mixed ...$columns): static
     {
         if (func_num_args() == 1 && is_iterable($columns[0])) {
             $columns = $columns[0];
@@ -63,14 +63,14 @@ trait Select
 
     /**
      * @param string $expression
-     * @param null|scalar|BaseExpression|Query ...$bindings
+     * @param null|scalar|DateTime|Query|(Closure(QueryInterface):void) ...$bindings
      * @return static Self object
      */
     public function selectRaw(string $expression, mixed ...$bindings): static
     {
         $resolvedBindings = [];
         foreach ($bindings as $item) {
-            if (is_scalar($item) || is_null($item) || $item instanceof \DateTime) {
+            if (is_scalar($item) || is_null($item) || $item instanceof DateTime) {
                 array_push($resolvedBindings, Expressions::literal($item));
             } elseif ($item instanceof BaseExpression) {
                 array_push($resolvedBindings, $item);

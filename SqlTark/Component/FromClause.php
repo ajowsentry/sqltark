@@ -12,7 +12,7 @@ class FromClause extends AbstractFrom
     /**
      * @var string|Query $table
      */
-    protected $table;
+    protected string|Query $table;
 
     /**
      * @return string|Query
@@ -54,6 +54,9 @@ class FromClause extends AbstractFrom
         return $this->alias;
     }
 
+    /**
+     * @return void
+     */
     public function __clone(): void
     {
         $this->table = Helper::cloneObject($this->table);

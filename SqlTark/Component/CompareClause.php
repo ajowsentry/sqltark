@@ -71,7 +71,7 @@ class CompareClause extends AbstractCondition
      * @param BaseExpression|Query $value
      * @return void
      */
-    public function setRight($value): void
+    public function setRight(BaseExpression|Query $value): void
     {
         $this->right = $value;
     }

@@ -161,6 +161,8 @@ trait From
     }
 
     /**
+     * @param string $expression
+     * @param null|scalar|DateTime|Query|(Closure(QueryInterface):void) ...$bindings
      * @return $this Self object
      */
     public function fromRaw(string $expression, ...$bindings)

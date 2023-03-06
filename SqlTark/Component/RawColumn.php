@@ -18,7 +18,7 @@ class RawColumn extends AbstractColumn
     /**
      * @var list<BaseExpression|Query> $bindings
      */
-    protected array $bindings;
+    protected iterable $bindings;
 
     /**
      * @return string
@@ -40,7 +40,7 @@ class RawColumn extends AbstractColumn
     /**
      * @return list<BaseExpression|Query>
      */
-    public function getBindings(): array
+    public function getBindings(): iterable
     {
         return $this->bindings;
     }
@@ -49,7 +49,7 @@ class RawColumn extends AbstractColumn
      * @param list<BaseExpression|Query> $value
      * @return void
      */
-    public function setBindings(array $value): void
+    public function setBindings(iterable $value): void
     {
         $this->bindings = $value;
     }

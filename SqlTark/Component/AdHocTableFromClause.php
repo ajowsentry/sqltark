@@ -13,12 +13,12 @@ class AdHocTableFromClause extends AbstractFrom
     /**
      * @var list<string> $columns
      */
-    protected $columns;
+    protected iterable $columns;
 
     /**
      * @var list<list<BaseExpression|Query>> $values
      */
-    protected $values;
+    protected iterable $values;
 
     /**
      * @return list<string>
