@@ -1,3 +1,5 @@
 /vendor/
 composer.lock
+phpstan.log
 rnd.php
+*.lgc
