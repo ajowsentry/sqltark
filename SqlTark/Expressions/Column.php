@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
-class Column extends BaseExpression
+final class Column extends AbstractExpression
 {
     /**
-     * @var string
+     * @var string $name
      */
     protected string $name;
 
@@ -21,12 +21,11 @@ class Column extends BaseExpression
 
     /**
      * @param string $value
-     * @return static
+     * @return void
      */
-    public function setName(string $value): static
+    public function setName(string $value): void
     {
         $this->name = $value;
-        return $this;
     }
 
     /**

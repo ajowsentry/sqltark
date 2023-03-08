@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
-class Literal extends BaseExpression
+use DateTimeInterface;
+
+final class Literal extends AbstractExpression
 {
     /**
-     * @var mixed
+     * @var null|scalar|DateTimeInterface $value
      */
-    protected mixed $value;
+    private mixed $value;
 
     /**
-     * @return mixed
+     * @return null|scalar|DateTimeInterface $value
      */
     public function getValue(): mixed
     {
@@ -20,17 +22,16 @@ class Literal extends BaseExpression
     }
 
     /**
-     * @param mixed $value
-     * @return static
+     * @param null|scalar|DateTimeInterface $value
+     * @return void
      */
-    public function setValue(mixed $value): static
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
-        return $this;
     }
 
     /**
-     * @param mixed $value
+     * @param null|scalar|DateTimeInterface $value
      */
     public function __construct(mixed $value)
     {

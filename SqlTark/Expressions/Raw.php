@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
-use SqlTark\Query;
-
-class Raw extends BaseExpression
+final class Raw extends AbstractExpression
 {
     /**
-     * @var string
+     * @var string $expression
      */
     protected string $expression;
 
     /**
-     * @var list<BaseExpression|Query> $bindings
+     * @var list<AbstractExpression> $bindings
      */
     protected iterable $bindings;
 
@@ -28,16 +26,15 @@ class Raw extends BaseExpression
 
     /**
      * @param string $value
-     * @return static
+     * @return void
      */
-    public function setExpression(string $value): static
+    public function setExpression(string $value): void
     {
         $this->expression = $value;
-        return $this;
     }
 
     /**
-     * @return list<BaseExpression|Query>
+     * @return list<AbstractExpression>
      */
     public function getBindings(): iterable
     {
@@ -45,18 +42,17 @@ class Raw extends BaseExpression
     }
 
     /**
-     * @param list<BaseExpression|Query> $value
-     * @return static
+     * @param list<AbstractExpression> $value
+     * @return void
      */
-    public function setBindings(iterable $value): static
+    public function setBindings(iterable $value): void
     {
         $this->bindings = $value;
-        return $this;
     }
 
     /**
      * @param string $expression
-     * @param list<BaseExpression|Query> $bindings
+     * @param list<AbstractExpression> $bindings
      */
     public function __construct(string $expression, iterable $bindings = [])
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
-abstract class BaseExpression
+abstract class AbstractExpression
 {
     /**
      * @var ?string $wrap

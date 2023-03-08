@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace SqlTark\Expressions;
 
-class Variable extends BaseExpression
+final class Variable extends AbstractExpression
 {
     /**
-     * @var string
+     * @var ?string $name
      */
-    protected string $name;
+    protected ?string $name;
 
     /**
-     * @return string
+     * @return ?string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $value
-     * @return static
+     * @param ?string $value
+     * @return void
      */
-    public function setName(string $value): static
+    public function setName(?string $value): void
     {
         $this->name = $value;
-        return $this;
     }
 
     /**
-     * @param string $name
+     * @param ?string $name
      */
-    public function __construct(string $name)
+    public function __construct(?string $name = null)
     {
         $this->name = $name;
     }
