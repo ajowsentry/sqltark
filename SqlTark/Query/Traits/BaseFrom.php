@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace SqlTark\Query\Traits;
 
-use SqlTark\Helper;
-use InvalidArgumentException;
 use SqlTark\Component\FromClause;
 use SqlTark\Component\ComponentType;
 
@@ -25,38 +23,34 @@ trait BaseFrom
     }
 
     /**
-     * @param ?string $alias
-     * @return static
+     * @param ?string $value
+     * @return void
      */
-    public function setAlias(?string $value): static
+    public function setAlias(?string $value): void
     {
         $this->alias = $value;
+    }
+
+    /**
+     * @param ?string $alias
+     * @return static Self object
+     */
+    public function alias(?string $alias): static
+    {
+        $this->setAlias($alias);
         return $this;
     }
 
     /**
+     * @param string $table
      * @param ?string $alias
-     * @return $this Self object
+     * @return static Self object
      */
-    public function alias(?string $alias)
+    public function from(string $table, ?string $alias = null): static
     {
-        return $this->setAlias($alias);
-    }
-
-    /**
-     * @return $this Self object
-     */
-    public function from($table, ?string $alias = null)
-    {
-        $component = null;
-        if (is_string($table)) {
-            $component = new FromClause;
-            $component->setTable($table);
-            $component->setAlias($alias);
-        } else {
-            $class = Helper::getType($table);
-            throw new InvalidArgumentException("Could not resolve '{$class}' as table");
-        }
+        $component = new FromClause;
+        $component->setTable($table);
+        $component->setAlias($alias);
 
         return $this->addOrReplaceComponent(ComponentType::From, $component);
     }

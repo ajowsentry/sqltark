@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class InCondition extends AbstractCondition
 {
     /**
-     * @var BaseExpression|Query $column
+     * @var AbstractExpression|Query $column
      */
-    protected BaseExpression|Query $column;
+    protected AbstractExpression|Query $column;
 
     /**
-     * @var list<BaseExpression>|Query $values
+     * @var list<AbstractExpression>|Query $values
      */
     protected iterable|Query $values;
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
     public function getColumn()
     {
@@ -29,16 +29,16 @@ class InCondition extends AbstractCondition
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
-    public function setColumn(BaseExpression|Query $value): void
+    public function setColumn(AbstractExpression|Query $value): void
     {
         $this->column = $value;
     }
 
     /**
-     * @return list<BaseExpression>|Query
+     * @return list<AbstractExpression>|Query
      */
     public function getValues(): iterable|Query
     {
@@ -46,7 +46,7 @@ class InCondition extends AbstractCondition
     }
 
     /**
-     * @param list<BaseExpression>|Query
+     * @param list<AbstractExpression>|Query $value
      * @return void
      */
     public function setValues(iterable|Query $value): void
@@ -59,7 +59,7 @@ class InCondition extends AbstractCondition
      */
     public function __clone(): void
     {
-        $this->column = Helper::cloneObject($this->column);
-        $this->values = Helper::cloneObject($this->values);
+        $this->column = Helper::clone($this->column);
+        $this->values = Helper::clone($this->values);
     }
 }

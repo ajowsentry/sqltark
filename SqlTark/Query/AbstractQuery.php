@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace SqlTark\Query;
 
+use Closure;
 use SqlTark\Query;
-use InvalidArgumentException;
+use SqlTark\Utilities\Helper;
 use SqlTark\Component\ComponentType;
 use SqlTark\Component\AbstractComponent;
 
@@ -27,6 +28,16 @@ abstract class AbstractQuery implements QueryInterface
     protected MethodType $method = MethodType::Select;
 
     /**
+     * @var ComponentType $conditionComponent
+     */
+    protected ComponentType $conditionComponent = ComponentType::Where;
+
+    public function getConditionComponent(): ComponentType
+    {
+        return $this->conditionComponent;
+    }
+
+    /**
      * @return ?AbstractQuery
      */
     public function getParent(): ?AbstractQuery
@@ -41,8 +52,7 @@ abstract class AbstractQuery implements QueryInterface
     public function setParent(AbstractQuery $value): static
     {
         if ($this === $value) {
-            $class = get_class($value);
-            throw new InvalidArgumentException("Cannot set the same {$class} as a parent of itself");
+            Helper::throwInvalidArgumentException("Cannot set the same %s as a parent of itself", $value);
         }
 
         $this->parent = $value;
@@ -175,36 +185,13 @@ abstract class AbstractQuery implements QueryInterface
     /**
      * {@inheritdoc}
      */
-    public function when(bool $condition, ?callable $whenTrue, ?callable $whenFalse): static
+    public function when(bool $condition, Closure $whenTrue, ?Closure $whenFalse = null): static
     {
-        if($condition && !is_null($whenTrue)) {
-            $whenTrue($this);
-        }
-        elseif(!$condition && !is_null($whenFalse)) {
-            $whenFalse($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function whenTrue(bool $condition, ?callable $whenTrue): static
-    {
-        if($condition && !is_null($whenTrue)) {
+        if($condition) {
             $whenTrue($this);
         }
 
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function whenFalse(bool $condition, ?callable $whenFalse): static
-    {
-        if(!$condition && !is_null($whenFalse)) {
+        elseif(!is_null($whenFalse)) {
             $whenFalse($this);
         }
 

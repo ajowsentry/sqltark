@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class OrderClause extends AbstractOrder
 {
     /**
-     * @var BaseExpression|Query $column
+     * @var AbstractExpression|Query $column
      */
-    protected BaseExpression|Query $column;
+    protected AbstractExpression|Query $column;
 
     /**
      * @var bool
@@ -20,7 +20,7 @@ class OrderClause extends AbstractOrder
     protected bool $ascending = true;
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
     public function getColumn()
     {
@@ -28,7 +28,7 @@ class OrderClause extends AbstractOrder
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
     public function setColumn($value): void
@@ -58,6 +58,6 @@ class OrderClause extends AbstractOrder
      */
     public function __clone(): void
     {
-        $this->column = Helper::cloneObject($this->column);
+        $this->column = Helper::clone($this->column);
     }
 }

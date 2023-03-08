@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
+use SqlTark\Utilities\Helper;
 
 class ExistsCondition extends AbstractCondition
 {
@@ -36,6 +36,6 @@ class ExistsCondition extends AbstractCondition
      */
     public function __clone(): void
     {
-        $this->query = Helper::cloneObject($this->query);
+        $this->query = Helper::clone($this->query);
     }
 }

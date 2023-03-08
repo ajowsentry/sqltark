@@ -6,387 +6,429 @@ namespace SqlTark\Query;
 
 use Closure;
 use SqlTark\Query;
-use SqlTark\Expressions\BaseExpression;
+use DateTimeInterface;
+use SqlTark\Component\LikeType;
+use SqlTark\Expressions\AbstractExpression;
 
-/**
- * @method static where(array<scalar|BaseExpression|Query,scalar|BaseExpression|Query>|object $pairs)
- * @method static orWhere(array<scalar|BaseExpression|Query,scalar|BaseExpression|Query>|object $pairs)
- * @method static whereNot(array<scalar|BaseExpression|Query,scalar|BaseExpression|Query>|object $pairs)
- * @method static orWhereNot(array<scalar|BaseExpression|Query,scalar|BaseExpression|Query>|object $pairs)
- * 
- * @method static where(scalar|BaseExpression|Query $left, scalar|BaseExpression|Query $right)
- * @method static orWhere(scalar|BaseExpression|Query $left, scalar|BaseExpression|Query $right)
- * @method static whereNot(scalar|BaseExpression|Query $left, scalar|BaseExpression|Query $right)
- * @method static orWhereNot(scalar|BaseExpression|Query $left, scalar|BaseExpression|Query $right)
- */
-interface ConditionInterface extends QueryInterface
+interface ConditionInterface
 {
     /**
-     * Where and condtition
-     * @return static Self object
-     */
-    public function and(): static;
-
-    /**
-     * Where or condtition
      * @return static Self object
      */
     public function or(): static;
 
     /**
-     * Where not condtition
-     * @param bool $value Is not?
+     * @return static Self object
+     */
+    public function and(): static;
+
+    /**
+     * @param bool $value
      * @return static Self object
      */
     public function not(bool $value = true): static;
 
     /**
-     * Where compare two value using ```and``` clause
-     * @param scalar|BaseExpression|Query $left
-     * @param ?string $operator
-     * @param scalar|BaseExpression|Query $right
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param string $operator
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function where(mixed $left, ?string $operator = null, mixed $right = null): static;
+    public function compare(mixed $left, string $operator, mixed $right): static;
 
     /**
-     * Where compare two value using ```or``` clause
-     * @param scalar|BaseExpression|Query $left
-     * @param ?string $operator
-     * @param scalar|BaseExpression|Query $right
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param string $operator
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function orWhere(mixed $left, ?string $operator = null, mixed $right = null): static;
+    public function orCompare(mixed $left, string $operator, mixed $right): static;
 
     /**
-     * Where compare two value using ```not``` clause
-     * @param scalar|BaseExpression|Query $left
-     * @param ?string $operator
-     * @param scalar|BaseExpression|Query $right
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function whereNot(mixed $left, ?string $operator = null, mixed $right = null): static;
+    public function equals(mixed $left, mixed $right): static;
 
     /**
-     * Where compare two value ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $left
-     * @param ?string $operator
-     * @param scalar|BaseExpression|Query $right
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function orWhereNot(mixed $left, ?string $operator = null, mixed $right = null): static;
+    public function orEquals(mixed $left, mixed $right): static;
 
     /**
-     * Where value is in values using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param list<scalar|BaseExpression|Query>|Query $values
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function whereIn(mixed $column, mixed $values): static;
+    public function notEquals(mixed $left, mixed $right): static;
 
     /**
-     * Where value is in values using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param list<scalar|BaseExpression|Query>|Query $values
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function orWhereIn(mixed $column, mixed $values): static;
+    public function orNotEquals(mixed $left, mixed $right): static;
 
     /**
-     * Where value is in values using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param list<scalar|BaseExpression|Query>|Query $values
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function whereNotIn(mixed $column, mixed $values): static;
+    public function greaterThan(mixed $left, mixed $right): static;
 
     /**
-     * Where value is in values using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param list<scalar|BaseExpression|Query>|Query $values
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
      * @return static Self object
      */
-    public function orWhereNotIn(mixed $column, mixed $values): static;
+    public function orGreaterThan(mixed $left, mixed $right): static;
 
     /**
-     * Where raw expression using ```and``` clause
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function greaterEquals(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function orGreaterEquals(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function lesserThan(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function orLesserThan(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function lesserEquals(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $left
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $right
+     * @return static Self object
+     */
+    public function orLesserEquals(mixed $left, mixed $right): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
+     * @return static Self object
+     */
+    public function in(mixed $column, iterable $list): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
+     * @return static Self object
+     */
+    public function orIn(mixed $column, iterable $list): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
+     * @return static Self object
+     */
+    public function notIn(mixed $column, iterable $list): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
+     * @return static Self object
+     */
+    public function orNotIn(mixed $column, iterable $list): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @return static Self object
+     */
+    public function isNull(mixed $column): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @return static Self object
+     */
+    public function orIsNull(mixed $column): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @return static Self object
+     */
+    public function notIsNull(mixed $column): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @return static Self object
+     */
+    public function orNotIsNull(mixed $column): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $low
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $high
+     * @return static Self object
+     */
+    public function between(mixed $column, mixed $low, mixed $high): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $low
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $high
+     * @return static Self object
+     */
+    public function orBetween(mixed $column, mixed $low, mixed $high): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $low
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $high
+     * @return static Self object
+     */
+    public function notBetween(mixed $column, mixed $low, mixed $high): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $low
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $high
+     * @return static Self object
+     */
+    public function orNotBetween(mixed $column, mixed $low, mixed $high): static;
+
+    /**
+     * @param (Closure(ConditionInterface):void)|ConditionInterface $condition
+     * @return static Self object
+     */
+    public function group(Closure|ConditionInterface $condition): static;
+
+    /**
+     * @param (Closure(ConditionInterface):void)|ConditionInterface $condition
+     * @return static Self object
+     */
+    public function orGroup(Closure|ConditionInterface $condition): static;
+
+    /**
+     * @param (Closure(ConditionInterface):void)|ConditionInterface $condition
+     * @return static Self object
+     */
+    public function notGroup(Closure|ConditionInterface $condition): static;
+
+    /**
+     * @param (Closure(ConditionInterface):void)|ConditionInterface $condition
+     * @return static Self object
+     */
+    public function orNotGroup(Closure|ConditionInterface $condition): static;
+
+    /**
+     * @param (Closure(Query):void)|Query $query
+     * @return static Self object
+     */
+    public function exists(Closure|Query $query): static;
+
+    /**
+     * @param (Closure(Query):void)|Query $query
+     * @return static Self object
+     */
+    public function orExists(Closure|Query $query): static;
+
+    /**
+     * @param (Closure(Query):void)|Query $query
+     * @return static Self object
+     */
+    public function notExists(Closure|Query $query): static;
+
+    /**
+     * @param (Closure(Query):void)|Query $query
+     * @return static Self object
+     */
+    public function orNotExists(Closure|Query $query): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function like(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null, LikeType $likeType = LikeType::Like): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function notLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orNotLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function startsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orStartsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function notStartsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orNotStartsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function endsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orEndsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function notEndsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orNotEndsWith(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function contains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function notContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
+     * @param string $value
+     * @param bool $caseSensitive
+     * @param ?string $escapeCharacter
+     * @return static Self object
+     */
+    public function orNotContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
+
+    /**
      * @param string $expression
-     * @param null|scalar|BaseExpression|Query ...$bindings
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query ...$bindings
      * @return static Self object
      */
-    public function whereRaw(string $expression, mixed ...$bindings): static;
+    public function conditionRaw(string $expression, mixed ...$bindings): static;
 
     /**
-     * Where raw expression using ```or``` clause
      * @param string $expression
-     * @param null|scalar|BaseExpression|Query ...$bindings
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query ...$bindings
      * @return static Self object
      */
-    public function orWhereRaw(string $expression, mixed ...$bindings): static;
+    public function orConditionRaw(string $expression, mixed ...$bindings): static;
 
     /**
-     * Where value is null using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
+     * @param string $expression
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query ...$bindings
      * @return static Self object
      */
-    public function whereNull(mixed $column): static;
+    public function notConditionRaw(string $expression, mixed ...$bindings): static;
 
     /**
-     * Where value is null using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
+     * @param string $expression
+     * @param null|scalar|DateTimeInterface|AbstractExpression|Query ...$bindings
      * @return static Self object
      */
-    public function orWhereNull(mixed $column): static;
-
-    /**
-     * Where value is not null using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @return static Self object
-     */
-    public function whereNotNull(mixed $column): static;
-
-    /**
-     * Where value is not null using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @return static Self object
-     */
-    public function orWhereNotNull(mixed $column): static;
-
-    /**
-     * Where value like using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value like using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value like using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereNotLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value like using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereNotLike(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value starts with using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereStarts(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value starts with using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereStarts(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value starts with using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereNotStarts(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value starts with using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereNotStarts(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value ends with using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereEnds(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value ends with using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereEnds(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value ends with using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereNotEnds(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value ends with using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereNotEnds(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value contains using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value contains using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value contains using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function whereNotContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value contains using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param string $value
-     * @param bool $caseSensitive
-     * @param ?string $escapeCharacter
-     * @return static Self object
-     */
-    public function orWhereNotContains(mixed $column, string $value, bool $caseSensitive = false, ?string $escapeCharacter = null): static;
-
-    /**
-     * Where value is between two values using ```and``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param mixed $lower
-     * @param mixed $higher
-     * @return static Self object
-     */
-    public function whereBetween(mixed $column, mixed $lower, mixed $higher): static;
-
-    /**
-     * Where value is between two values using ```or``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param mixed $lower
-     * @param mixed $higher
-     * @return static Self object
-     */
-    public function orWhereBetween(mixed $column, mixed $lower, mixed $higher): static;
-
-    /**
-     * Where value is between two values using ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param scalar|BaseExpression|Query $lower
-     * @param scalar|BaseExpression|Query $higher
-     * @return static Self object
-     */
-    public function whereNotBetween(mixed $column, mixed $lower, mixed $higher): static;
-
-    /**
-     * Where value is between two values using ```or``` and ```not``` clause
-     * @param scalar|BaseExpression|Query $column
-     * @param scalar|BaseExpression|Query $lower
-     * @param scalar|BaseExpression|Query $higher
-     * @return static Self object
-     */
-    public function orWhereNotBetween(mixed $column, mixed $lower, mixed $higher): static;
-
-    /**
-     * Perform grouping condition using ```and``` clause
-     * @param (Closure(ConditionInterface): void) $group
-     * @return static Self object
-     */
-    public function whereGroup(Closure $group): static;
-
-    /**
-     * Perform grouping condition using ```or``` clause
-     * @param (Closure(ConditionInterface): void) $group
-     * @return static Self object
-     */
-    public function orWhereGroup(Closure $group): static;
-
-    /**
-     * Where values in subquery is exists condition using ```and``` clause
-     * @param (Closure(Query): void)|Query $query
-     * @return static Self object
-     */
-    public function whereExists(mixed $query): static;
-
-    /**
-     * Where values in subquery is exists condition using ```or``` clause
-     * @param (Closure(Query): void)|Query $query
-     * @return static Self object
-     */
-    public function orWhereExists(mixed $query): static;
-
-    /**
-     * Where values in subquery ```not``` exists condition using ```and``` clause
-     * @param (Closure(Query): void)|Query $query
-     * @return static Self object
-     */
-    public function whereNotExists(mixed $query): static;
-
-    /**
-     * Where values in subquery is ```not``` exists condition using ```or``` clause
-     * @param (Closure(Query): void)|Query $query
-     * @return static Self object
-     */
-    public function orWhereNotExists(mixed $query): static;
+    public function orNotConditionRaw(string $expression, mixed ...$bindings): static;
 }

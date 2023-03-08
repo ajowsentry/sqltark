@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class CompareClause extends AbstractCondition
 {
     /**
-     * @var BaseExpression|Query $left
+     * @var AbstractExpression|Query $left
      */
-    protected BaseExpression|Query $left;
+    protected AbstractExpression|Query $left;
 
     /**
      * @var string $operator
@@ -21,23 +21,23 @@ class CompareClause extends AbstractCondition
     protected $operator;
 
     /**
-     * @var BaseExpression|Query $right
+     * @var AbstractExpression|Query $right
      */
-    protected BaseExpression|Query $right;
+    protected AbstractExpression|Query $right;
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getLeft(): BaseExpression|Query
+    public function getLeft(): AbstractExpression|Query
     {
         return $this->left;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
-    public function setLeft(BaseExpression|Query $value): void
+    public function setLeft(AbstractExpression|Query $value): void
     {
         $this->left = $value;
     }
@@ -60,18 +60,18 @@ class CompareClause extends AbstractCondition
     }
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getRight(): BaseExpression|Query
+    public function getRight(): AbstractExpression|Query
     {
         return $this->right;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
-    public function setRight(BaseExpression|Query $value): void
+    public function setRight(AbstractExpression|Query $value): void
     {
         $this->right = $value;
     }
@@ -81,7 +81,7 @@ class CompareClause extends AbstractCondition
      */
     public function __clone(): void
     {
-        $this->left = Helper::cloneObject($this->left);
-        $this->right = Helper::cloneObject($this->right);
+        $this->left = Helper::clone($this->left);
+        $this->right = Helper::clone($this->right);
     }
 }

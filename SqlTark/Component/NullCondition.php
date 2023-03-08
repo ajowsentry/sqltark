@@ -5,29 +5,29 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class NullCondition extends AbstractCondition
 {
     /**
-     * @var BaseExpression|Query $column
+     * @var AbstractExpression|Query $column
      */
-    protected BaseExpression|Query $column;
+    protected AbstractExpression|Query $column;
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getColumn(): BaseExpression|Query
+    public function getColumn(): AbstractExpression|Query
     {
         return $this->column;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
-    public function setColumn(BaseExpression|Query $value): void
+    public function setColumn(AbstractExpression|Query $value): void
     {
         $this->column = $value;
     }
@@ -37,6 +37,6 @@ class NullCondition extends AbstractCondition
      */
     public function __clone(): void
     {
-        $this->column = Helper::cloneObject($this->column);
+        $this->column = Helper::clone($this->column);
     }
 }

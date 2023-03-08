@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SqlTark\Query;
 
+use Closure;
 use SqlTark\Component\ComponentType;
 use SqlTark\Component\AbstractComponent;
 use SqlTark\Query;
@@ -91,27 +92,9 @@ interface QueryInterface
      * Execute query when condition is fulfilled
      * 
      * @param bool $condition Condition
-     * @param ?callable $whenTrue Query when true
-     * @param ?callable $whenFalse Query when false
+     * @param (Closure(QueryInterface):void) $whenTrue Query when true
+     * @param ?(Closure(QueryInterface):void) $whenFalse Query when false
      * @return static Self object
      */
-    public function when(bool $condition, ?callable $whenTrue, ?callable $whenFalse): static;
-
-    /**
-     * Execute query when condition is fulfilled
-     * 
-     * @param bool $condition Condition
-     * @param ?callable $whenTrue Query when true
-     * @return static Self object
-     */
-    public function whenTrue(bool $condition, ?callable $whenTrue): static;
-
-    /**
-     * Execute query when condition is fulfilled
-     * 
-     * @param bool $condition Condition
-     * @param ?callable $whenFalse Query when false
-     * @return static Self object
-     */
-    public function whenFalse(bool $condition, ?callable $whenFalse): static;
+    public function when(bool $condition, Closure $whenTrue, ?Closure $whenFalse): static;
 }

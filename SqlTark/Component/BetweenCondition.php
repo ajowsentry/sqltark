@@ -5,36 +5,36 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class BetweenCondition extends AbstractCondition
 {
     /**
-     * @var BaseExpression|Query $column
+     * @var AbstractExpression|Query $column
      */
-    protected BaseExpression|Query $column;
+    protected AbstractExpression|Query $column;
 
     /**
-     * @var BaseExpression|Query $lower
+     * @var AbstractExpression|Query $lower
      */
-    protected BaseExpression|Query $lower;
+    protected AbstractExpression|Query $lower;
 
     /**
-     * @var BaseExpression|Query $higher
+     * @var AbstractExpression|Query $higher
      */
-    protected BaseExpression|Query $higher;
+    protected AbstractExpression|Query $higher;
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getColumn(): BaseExpression|Query
+    public function getColumn(): AbstractExpression|Query
     {
         return $this->column;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
     public function setColumn($value): void
@@ -43,15 +43,15 @@ class BetweenCondition extends AbstractCondition
     }
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getLower(): BaseExpression|Query
+    public function getLower(): AbstractExpression|Query
     {
         return $this->lower;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
     public function setLower($value): void
@@ -60,15 +60,15 @@ class BetweenCondition extends AbstractCondition
     }
 
     /**
-     * @return BaseExpression|Query
+     * @return AbstractExpression|Query
      */
-    public function getHigher(): BaseExpression|Query
+    public function getHigher(): AbstractExpression|Query
     {
         return $this->higher;
     }
 
     /**
-     * @param BaseExpression|Query $value
+     * @param AbstractExpression|Query $value
      * @return void
      */
     public function setHigher($value): void
@@ -81,8 +81,8 @@ class BetweenCondition extends AbstractCondition
      */
     public function __clone(): void
     {
-        $this->lower = Helper::cloneObject($this->lower);
-        $this->column = Helper::cloneObject($this->column);
-        $this->higher = Helper::cloneObject($this->higher);
+        $this->lower = Helper::clone($this->lower);
+        $this->column = Helper::clone($this->column);
+        $this->higher = Helper::clone($this->higher);
     }
 }

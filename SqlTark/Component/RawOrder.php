@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace SqlTark\Component;
 
-use SqlTark\Helper;
-use SqlTark\Expressions\BaseExpression;
-use SqlTark\Query;
+use SqlTark\Utilities\Helper;
+use SqlTark\Expressions\AbstractExpression;
 
 class RawOrder extends AbstractOrder
 {
@@ -16,7 +15,7 @@ class RawOrder extends AbstractOrder
     protected string $expression;
 
     /**
-     * @var list<BaseExpression|Query> $bindings
+     * @var list<AbstractExpression> $bindings
      */
     protected iterable $bindings;
 
@@ -38,7 +37,7 @@ class RawOrder extends AbstractOrder
     }
 
     /**
-     * @return list<BaseExpression|Query>
+     * @return list<AbstractExpression>
      */
     public function getBindings(): iterable
     {
@@ -46,7 +45,7 @@ class RawOrder extends AbstractOrder
     }
 
     /**
-     * @param list<BaseExpression|Query> $value
+     * @param list<AbstractExpression> $value
      * @return void
      */
     public function setBindings(iterable $value): void
@@ -56,6 +55,6 @@ class RawOrder extends AbstractOrder
 
     public function __clone(): void
     {
-        $this->bindings = Helper::cloneObject($this->bindings);
+        $this->bindings = Helper::clone($this->bindings);
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SqlTark\Component;
 
 use SqlTark\Query;
-use SqlTark\Helper;
+use SqlTark\Utilities\Helper;
 
 class FromClause extends AbstractFrom
 {
@@ -33,25 +33,15 @@ class FromClause extends AbstractFrom
 
     public function getAlias(): string
     {
-        if(empty($this->alias))
-        {
-            if(is_string($this->table))
-            {
-                if (stripos($this->table, ' as ') !== false) {
-                    $segments = array_filter(explode(' ', $this->table), function ($item) {
-                        return $item != '';
-                    });
-
-                    return $segments[2];
-                }
-            }
-            elseif($this->table instanceof Query)
-            {
-                // return $this->table->getAlias();
-            }
+        if (!empty($this->alias) && is_string($this->table)) {
+            $pair = Helper::extractAlias($this->table);
+            return $pair[1] ?? $pair[0];
+        }
+        elseif ($this->table instanceof Query) {
+            return $this->table->getAlias();
         }
 
-        return $this->alias;
+        return $this->alias ?? '';
     }
 
     /**
@@ -59,6 +49,6 @@ class FromClause extends AbstractFrom
      */
     public function __clone(): void
     {
-        $this->table = Helper::cloneObject($this->table);
+        $this->table = Helper::clone($this->table);
     }
 }
