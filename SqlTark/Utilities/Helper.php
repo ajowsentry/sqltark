@@ -7,16 +7,15 @@ namespace SqlTark\Utilities;
 use Closure;
 use SqlTark\Query;
 use DateTimeInterface;
+use SqlTark\Query\Join;
 use SqlTark\Expressions;
 use InvalidArgumentException;
 use SqlTark\Query\AbstractQuery;
-use SqlTark\Query\QueryInterface;
 use SqlTark\Query\WhereCondition;
 use SqlTark\Query\HavingCondition;
 use SqlTark\Component\ComponentType;
 use SqlTark\Query\ConditionInterface;
 use SqlTark\Expressions\AbstractExpression;
-use SqlTark\Query\Join;
 
 final class Helper
 {
@@ -113,6 +112,32 @@ final class Helper
         }
 
         return $value;
+    }
+
+    /**
+     * @param ?string $subject
+     * @param string $match
+     * @param Closure $callback
+     * @return string
+     */
+    public static function replaceAll(?string $subject, string $match, Closure $callback): string
+    {
+        if (empty($subject) || strpos($subject, $match) === false) {
+            return (string) $subject;
+        }
+
+        $splitted = explode($match, $subject);
+
+        $splitProcess = [];
+        for ($i = 1; $i < count($splitted); $i++) {
+            $splitProcess[] = $callback($i - 1) . $splitted[$i];
+        }
+
+        $result = array_reduce($splitProcess, function ($acc, $item) {
+            return $acc . $item;
+        }, $splitted[0]);
+
+        return $result;
     }
 
     /**
