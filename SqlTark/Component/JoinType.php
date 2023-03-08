@@ -55,4 +55,20 @@ enum JoinType: int
      * Full Join clause
      */
     case FullOuterJoin = 9;
+
+    public function syntaxOf(): string
+    {
+        return match($this) {
+            self::Join           => 'JOIN',
+            self::InnerJoin      => 'INNER JOIN',
+            self::LeftJoin       => 'LEFT JOIN',
+            self::RightJoin      => 'RIGHT JOIN',
+            self::OuterJoin      => 'OUTER JOIN',
+            self::CrossJoin      => 'CROSS JOIN',
+            self::NaturalJoin    => 'NATURAL JOIN',
+            self::LeftOuterJoin  => 'LEFT OUTER JOIN',
+            self::RightOuterJoin => 'RIGHT OUTER JOIN',
+            self::FullOuterJoin  => 'FULL OUTER JOIN',
+        };
+    }
 }

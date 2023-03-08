@@ -20,4 +20,9 @@ enum CombineType: int
      * Intersect Clause
      */
     case Intersect = 3;
+
+    public function syntaxOf(): string
+    {
+        return strtoupper($this->name);
+    }
 }
