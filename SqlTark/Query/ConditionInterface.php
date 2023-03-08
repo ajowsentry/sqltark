@@ -10,7 +10,7 @@ use DateTimeInterface;
 use SqlTark\Component\LikeType;
 use SqlTark\Expressions\AbstractExpression;
 
-interface ConditionInterface
+interface ConditionInterface extends QueryInterface
 {
     /**
      * @return static Self object
