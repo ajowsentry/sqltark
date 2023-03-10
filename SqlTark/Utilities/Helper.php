@@ -146,7 +146,7 @@ final class Helper
      */
     public static function extractAlias(string $expression): array
     {
-        return preg_split('/\s+as\s+/i', trim($expression), PREG_SPLIT_NO_EMPTY);
+        return preg_split('/\s+as\s+/i', trim($expression), 2, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
