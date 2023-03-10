@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace SqlTark;
 
 use Stringable;
-use AbstractCompiler;
 use RuntimeException;
 use SqlTark\Query\Traits;
 use SqlTark\Query\AbstractQuery;
 use SqlTark\Component\ComponentType;
 use SqlTark\Query\ConditionInterface;
+use SqlTark\Compiler\AbstractCompiler;
 
 class Query extends AbstractQuery implements Stringable, ConditionInterface
 {
@@ -69,12 +69,20 @@ class Query extends AbstractQuery implements Stringable, ConditionInterface
     /**
      * @return string
      */
-    public function __toString(): string
+    public function compile(): string
     {
         if(is_null($this->compiler)) {
             throw new RuntimeException("Compiler is not set.");
         }
 
         return $this->compiler->compileQuery($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->compile();
     }
 }

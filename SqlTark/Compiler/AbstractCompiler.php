@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+namespace SqlTark\Compiler;
+
 use SqlTark\Query;
+use DateTimeInterface;
 use SqlTark\Expressions\Raw;
 use SqlTark\Query\MethodType;
 use SqlTark\Utilities\Helper;
