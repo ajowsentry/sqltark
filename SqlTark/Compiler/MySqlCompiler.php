@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SqlTark\Compiler\MySql;
+namespace SqlTark\Compiler;
 
-use AbstractCompiler;
-use SqlTark\Compiler\Traits;
+use DateTimeInterface;
 
-class Compiler extends AbstractCompiler
+class MySqlCompiler extends AbstractCompiler
 {
     use Traits\ExpressionCompiler,
         Traits\SelectQueryCompiler,
