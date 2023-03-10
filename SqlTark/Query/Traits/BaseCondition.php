@@ -98,18 +98,17 @@ trait BaseCondition
     /**
      * {@inheritdoc}
      */
-    public function in(mixed $column, iterable $list): static
+    public function in(mixed $column, iterable|Query $list): static
     {
-        $resolvedValues = [];
-        foreach($list as $item) {
-            array_push($resolvedValues, Helper::resolveExpression($item));
-        }
+        $resolvedValues = is_iterable($list)
+            ? Helper::resolveExpressionList($list)
+            : $list;
 
         $component = new InCondition;
         $component->setNot($this->getNot());
         $component->setOr($this->getOr());
         $component->setColumn(Helper::resolveExpression($column, true));
-        $component->setValues(Helper::resolveExpressionList($list));
+        $component->setValues($resolvedValues);
 
         return $this->addComponent($this->conditionComponent, $component);
     }

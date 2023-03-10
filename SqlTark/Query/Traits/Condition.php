@@ -120,7 +120,7 @@ trait Condition
     /**
      * {@inheritdoc}
      */
-    public function orIn(mixed $column, iterable $list): static
+    public function orIn(mixed $column, iterable|Query $list): static
     {
         return $this->or()->in($column, $list);
     }
@@ -128,7 +128,7 @@ trait Condition
     /**
      * {@inheritdoc}
      */
-    public function notIn(mixed $column, iterable $list): static
+    public function notIn(mixed $column, iterable|Query $list): static
     {
         return $this->not()->in($column, $list);
     }
@@ -136,7 +136,7 @@ trait Condition
     /**
      * {@inheritdoc}
      */
-    public function orNotIn(mixed $column, iterable $list): static
+    public function orNotIn(mixed $column, iterable|Query $list): static
     {
         return $this->or()->not()->in($column, $list);
     }

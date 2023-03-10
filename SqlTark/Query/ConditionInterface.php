@@ -133,28 +133,28 @@ interface ConditionInterface extends QueryInterface
      * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
      * @return static Self object
      */
-    public function in(mixed $column, iterable $list): static;
+    public function in(mixed $column, iterable|Query $list): static;
 
     /**
      * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
      * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
      * @return static Self object
      */
-    public function orIn(mixed $column, iterable $list): static;
+    public function orIn(mixed $column, iterable|Query $list): static;
 
     /**
      * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
      * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
      * @return static Self object
      */
-    public function notIn(mixed $column, iterable $list): static;
+    public function notIn(mixed $column, iterable|Query $list): static;
 
     /**
      * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
      * @param list<null|scalar|DateTimeInterface|AbstractExpression|Query> $list
      * @return static Self object
      */
-    public function orNotIn(mixed $column, iterable $list): static;
+    public function orNotIn(mixed $column, iterable|Query $list): static;
 
     /**
      * @param null|scalar|DateTimeInterface|AbstractExpression|Query $column
