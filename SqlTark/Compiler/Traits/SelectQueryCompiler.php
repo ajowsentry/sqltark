@@ -44,38 +44,17 @@ trait SelectQueryCompiler
      */
     public function compileSelectQuery(Query $query): string
     {
-        /** @var list<AbstractFrom> $cte */
-        $cte = $query->getComponents(ComponentType::CTE);
-
-        /** @var list<AbstractColumn> $selects */
-        $selects = $query->getComponents(ComponentType::Select);
-
-        /** @var ?AbstractFrom $from */
-        $from = $query->getOneComponent(ComponentType::From);
-
-        /** @var list<AbstractJoin> $joins */
-        $joins = $query->getComponents(ComponentType::Join);
-
-        /** @var list<AbstractCondition> $where */
-        $where = $query->getComponents(ComponentType::Where);
-
-        /** @var list<AbstractColumn> $groupBy */
-        $groupBy = $query->getComponents(ComponentType::GroupBy);
-
-        /** @var list<AbstractCondition> $havings */
-        $havings = $query->getComponents(ComponentType::Having);
-
-        /** @var list<AbstractOrder> $orderBy */
-        $orderBy = $query->getComponents(ComponentType::OrderBy);
-
-        /** @var list<CombineClause> $combines */
-        $combines = $query->getComponents(ComponentType::Combine);
-
-        /** @var ?LimitClause $limit */
-        $limit = $query->getOneComponent(ComponentType::Limit);
-
-        /** @var ?OffsetClause $offset */
-        $offset = $query->getOneComponent(ComponentType::Offset);
+        $cte = $query->getComponents(ComponentType::CTE, AbstractFrom::class);
+        $selects = $query->getComponents(ComponentType::Select, AbstractColumn::class);
+        $from = $query->getOneComponent(ComponentType::From, AbstractFrom::class);
+        $joins = $query->getComponents(ComponentType::Join, AbstractJoin::class);
+        $where = $query->getComponents(ComponentType::Where, AbstractCondition::class);
+        $groupBy = $query->getComponents(ComponentType::GroupBy, AbstractColumn::class);
+        $havings = $query->getComponents(ComponentType::Having, AbstractCondition::class);
+        $orderBy = $query->getComponents(ComponentType::OrderBy, AbstractOrder::class);
+        $combines = $query->getComponents(ComponentType::Combine, CombineClause::class);
+        $limit = $query->getOneComponent(ComponentType::Limit, LimitClause::class);
+        $offset = $query->getOneComponent(ComponentType::Offset, OffsetClause::class);
 
         $result = '';
 
@@ -87,42 +66,42 @@ trait SelectQueryCompiler
         $result .= $this->compileSelect($selects, $query->isDistict());
 
         $resolvedFrom = $this->compileFrom($from);
-        if(is_string($resolvedFrom)) {
+        if($resolvedFrom) {
             $result .= ' FROM ' . $resolvedFrom;
         }
 
         $resolvedJoin = $this->compileJoin($joins);
-        if(is_string($resolvedJoin)) {
+        if($resolvedJoin) {
             $result .= ' ' . $resolvedJoin;
         }
 
         $resolvedWhere = $this->compileWhere($where);
-        if(is_string($resolvedWhere)) {
+        if($resolvedWhere) {
             $result .= ' ' . $resolvedWhere;
         }
 
         $resolvedGroupBy = $this->compileGroupBy($groupBy);
-        if(is_string($resolvedGroupBy)) {
+        if($resolvedGroupBy) {
             $result .= ' ' . $resolvedGroupBy;
         }
 
         $resolvedHaving = $this->compileHaving($havings);
-        if(is_string($resolvedHaving)) {
+        if($resolvedHaving) {
             $result .= ' ' . $resolvedHaving;
         }
 
         $resolvedOrderBy = $this->compileOrderBy($orderBy);
-        if(is_string($resolvedOrderBy)) {
+        if($resolvedOrderBy) {
             $result .= ' ' . $resolvedOrderBy;
         }
 
         $resolvedPaging = $this->compilePaging($limit, $offset);
-        if(is_string($resolvedPaging)) {
+        if($resolvedPaging) {
             $result .= ' ' . $resolvedPaging;
         }
 
         $resolvedCombine = $this->compileCombine($combines);
-        if(is_string($resolvedCombine)) {
+        if($resolvedCombine) {
             $result .= ' ' . $resolvedCombine;
         }
 
@@ -268,15 +247,13 @@ trait SelectQueryCompiler
             if ($component instanceof JoinClause) {
                 $join = $component->getJoin();
 
-                /** @var ?AbstractFrom $table */
-                $table = $join->getOneComponent(ComponentType::From);
+                $table = $join->getOneComponent(ComponentType::From, AbstractFrom::class);
                 $resolvedTable = $this->compileFrom($table);
 
                 $resolvedJoin = $join->getType()->syntaxOf() . ' ' . $resolvedTable;
                 /** Natural and cross join doesn't need on condition */
                 if (!in_array($join->getType(), [JoinType::CrossJoin, JoinType::NaturalJoin])) {
-                    /** @var list<AbstractCondition> $conditions */
-                    $conditions = $join->getComponents(ComponentType::Where);
+                    $conditions = $join->getComponents(ComponentType::Where, AbstractCondition::class);
                     $resolvedCondition = $this->compileConditions($conditions);
                     if (!empty($resolvedCondition)) {
                         $resolvedJoin .= ' ON ' . $resolvedCondition;
@@ -422,8 +399,7 @@ trait SelectQueryCompiler
                 $resolvedCondition .= "($resolvedValues)";
             }
             elseif ($condition instanceof GroupCondition) {
-                /** @var list<AbstractCondition> $clauses */
-                $clauses = $condition->getCondition()->getComponents($type);
+                $clauses = $condition->getCondition()->getComponents($type, AbstractCondition::class);
                 $resolvedCondition = $this->compileConditions($clauses);
                 if(count($clauses) > 1 || (count($clauses) == 1 && $clauses[0] instanceof RawCondition)) {
                     $resolvedCondition = "($resolvedCondition)";

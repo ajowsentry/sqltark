@@ -142,7 +142,7 @@ abstract class AbstractQuery implements QueryInterface
     /**
      * {@inheritdoc}
      */
-    public function getComponents(?ComponentType $componentType = null): array
+    public function getComponents(?ComponentType $componentType = null, string $expectClass = AbstractComponent::class): array
     {
         if(is_null($this->components)) {
             return [];
@@ -167,7 +167,7 @@ abstract class AbstractQuery implements QueryInterface
     /**
      * {@inheritdoc}
      */
-    public function getOneComponent(ComponentType $componentType): ?AbstractComponent
+    public function getOneComponent(ComponentType $componentType, string $expectClass = AbstractComponent::class): ?AbstractComponent
     {
         return $this->hasComponent($componentType)
             ? $this->components[$componentType->value][0]

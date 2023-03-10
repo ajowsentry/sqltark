@@ -67,18 +67,22 @@ interface QueryInterface
      * 
      * Get all components when no parameter is specified.
      * 
+     * @template T of AbstractComponent
      * @param ?ComponentType $componentType Component type from ```ComponentType``` enum class
-     * @return AbstractComponent[] Components.
+     * @param class-string<T> $expectClass
+     * @return list<T> Components.
      */
-    public function getComponents(?ComponentType $componentType = null): array;
+    public function getComponents(?ComponentType $componentType = null, string $expectClass = AbstractComponent::class): array;
 
     /**
      * Get single components with specified ```componentType```.
      * 
+     * @template T of AbstractComponent
      * @param ComponentType $componentType Component type from ```ComponentType``` enum class
-     * @return ?AbstractComponent Component.
+     * @param class-string<T> $expectClass
+     * @return ?T Component.
      */
-    public function getOneComponent(ComponentType $componentType): ?AbstractComponent;
+    public function getOneComponent(ComponentType $componentType, string $expectClass = AbstractComponent::class): ?AbstractComponent;
 
     /**
      * Check wether components with specified ```componentType``` is exists.

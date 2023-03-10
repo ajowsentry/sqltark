@@ -23,23 +23,12 @@ trait DeleteQueryCompiler
      */
     public function compileDeleteQuery(Query $query): string
     {
-        /** @var ?AbstractFrom $from*/
-        $from = $query->getOneComponent(ComponentType::From);
-
-        /** @var list<AbstractJoin> $joins */
-        $joins = $query->getComponents(ComponentType::Join);
-
-        /** @var list<AbstractCondition> $where */
-        $where = $query->getComponents(ComponentType::Where);
-
-        /** @var list<AbstractOrder> $orderBy */
-        $orderBy = $query->getComponents(ComponentType::OrderBy);
-
-        /** @var ?LimitClause $limit */
-        $limit = $query->getOneComponent(ComponentType::Limit);
-
-        /** @var ?OffsetClause $offset */
-        $offset = $query->getOneComponent(ComponentType::Offset);
+        $from = $query->getOneComponent(ComponentType::From, AbstractFrom::class);
+        $joins = $query->getComponents(ComponentType::Join, AbstractJoin::class);
+        $where = $query->getComponents(ComponentType::Where, AbstractCondition::class);
+        $orderBy = $query->getComponents(ComponentType::OrderBy, AbstractOrder::class);
+        $limit = $query->getOneComponent(ComponentType::Limit, LimitClause::class);
+        $offset = $query->getOneComponent(ComponentType::Offset, OffsetClause::class);
 
         if(empty($from)) {
             throw new InvalidArgumentException("Table not specified!");
