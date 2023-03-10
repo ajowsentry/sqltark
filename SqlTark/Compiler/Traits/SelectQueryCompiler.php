@@ -22,6 +22,7 @@ use SqlTark\Component\AbstractJoin;
 use SqlTark\Component\ColumnClause;
 use SqlTark\Component\OffsetClause;
 use SqlTark\Component\RawCondition;
+use SqlTark\Component\AbstractOrder;
 use SqlTark\Component\CombineClause;
 use SqlTark\Component\CompareClause;
 use SqlTark\Component\ComponentType;
@@ -32,7 +33,6 @@ use SqlTark\Component\GroupCondition;
 use SqlTark\Component\ExistsCondition;
 use SqlTark\Component\BetweenCondition;
 use SqlTark\Component\AbstractCondition;
-use SqlTark\Component\AbstractOrder;
 use SqlTark\Expressions\AbstractExpression;
 
 trait SelectQueryCompiler
@@ -321,14 +321,14 @@ trait SelectQueryCompiler
                     $resolvedCondition .= ' NOT';
                 }
 
-                $resolvedCondition .= " BETWEEN ($resolvedLower AND $resolvedHigher)";
+                $resolvedCondition .= " BETWEEN {$resolvedLower} AND {$resolvedHigher}";
             }
             elseif ($condition instanceof ExistsCondition) {
                 $query = $condition->getQuery();
                 $resolvedQuery = $this->compileQuery($query);
 
                 $resolvedCondition = $condition->getNot() ? 'NOT EXISTS' : 'EXISTS';
-                $resolvedCondition .= "($resolvedQuery)";
+                $resolvedCondition .= "({$resolvedQuery})";
             }
             elseif ($condition instanceof NullCondition) {
                 $column = $condition->getColumn();
