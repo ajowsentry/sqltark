@@ -26,8 +26,12 @@ final class Helper
      */
     public static function resolveExpression(mixed $expression, bool $stringAsColumn = false): Query|AbstractExpression
     {
-        if ($expression instanceof Query || $expression instanceof AbstractExpression) {
+        if ($expression instanceof AbstractExpression) {
             return $expression;
+        }
+
+        elseif ($expression instanceof Query) {
+            return clone $expression;
         }
 
         elseif (is_string($expression) && $stringAsColumn) {
@@ -51,11 +55,7 @@ final class Helper
      */
     public static function resolveExpressionList(iterable $expressionList, bool $stringAsColumn = false): array
     {
-        $resolved = [];
-        foreach($expressionList as $item)
-            array_push($resolved, self::resolveExpression($item, $stringAsColumn));
-        
-        return $resolved;
+        return array_map(fn($item) => self::resolveExpression($item, $stringAsColumn), $expressionList);
     }
 
     /**
@@ -71,7 +71,7 @@ final class Helper
             return $child;
         }
 
-        return $value;
+        return clone $value;
     }
 
     /**
@@ -90,7 +90,7 @@ final class Helper
             return $child;
         }
 
-        return $value;
+        return clone $value;
     }
 
     /**
@@ -111,7 +111,7 @@ final class Helper
             return $condition;
         }
 
-        return $value;
+        return clone $value;
     }
 
     /**
@@ -133,9 +133,7 @@ final class Helper
             $splitProcess[] = $callback($i - 1) . $splitted[$i];
         }
 
-        $result = array_reduce($splitProcess, function ($acc, $item) {
-            return $acc . $item;
-        }, $splitted[0]);
+        $result = array_reduce($splitProcess, fn ($acc, $item) => $acc . $item, $splitted[0]);
 
         return $result;
     }
