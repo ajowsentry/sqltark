@@ -13,7 +13,6 @@ use SqlTark\Component\RawFrom;
 use SqlTark\Component\FromClause;
 use SqlTark\Component\ComponentType;
 use SqlTark\Expressions\AbstractExpression;
-use SqlTark\Component\AdHocTableFromClause;
 
 trait From
 {

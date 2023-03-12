@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SqlTark\Compiler;
 
-class MySqlCompiler extends AbstractCompiler
+class SqlServerCompiler extends AbstractCompiler
 {
     use Traits\ExpressionCompiler,
         Traits\SelectQueryCompiler,
@@ -15,12 +15,12 @@ class MySqlCompiler extends AbstractCompiler
     /**
      * {@inheritdoc}
      */
-    protected string $openingIdentifier = '`';
+    protected string $openingIdentifier = '[';
 
     /**
      * {@inheritdoc}
      */
-    protected string $closingIdentifier = '`';
+    protected string $closingIdentifier = ']';
 
     /**
      * {@inheritdoc}
@@ -28,17 +28,7 @@ class MySqlCompiler extends AbstractCompiler
     public function quote(mixed $value, bool $quoteLike = false): string
     {
         if (is_string($value)) {
-            $result = str_replace(
-                ['\\', "\r", "\n", "\t", "\x08", "'", "\"", "\x1A", "\x00"],
-                ['\\\\', '\r', '\n', '\t', '\b', "\'", '\"', '\Z', '\0'],
-                $value
-            );
-
-            if($quoteLike) {
-                $result = str_replace(['\%', '\_'], ['%', '_'], $result);
-            }
-
-            return "'{$result}'";
+            return "'" . str_replace("'", "''", $value) . "'";
         } elseif (is_bool($value)) {
             return $value ? 'TRUE' : 'FALSE';
         } elseif (is_scalar($value)) {

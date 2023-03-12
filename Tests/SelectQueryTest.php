@@ -160,4 +160,21 @@ final class SelectQueryTest extends TestCase
         $query->limit(222);
         $this->assertEquals($output, $query->compile());
     }
+
+    public function testSelectQuery_withQuery()
+    {
+        $query = new Query;
+        $query->setCompiler(new MySqlCompiler);
+
+        $subQuery = $query->newQuery();
+        $subQuery->from('xtable')->select('col1')->limit(1);
+
+        $output = "SELECT * FROM (SELECT `col1` FROM `xtable` LIMIT 1) AS `x`";
+        $query->fromQuery($subQuery->alias('x'));
+        $this->assertEquals($output, $query->compile());
+
+        $output = "SELECT (SELECT `col1` FROM `xtable` LIMIT 1) AS `xxx` FROM (SELECT `col1` FROM `xtable` LIMIT 1) AS `x`";
+        $query->select($subQuery->alias('xxx'));
+        $this->assertEquals($output, $query->compile());
+    }
 }

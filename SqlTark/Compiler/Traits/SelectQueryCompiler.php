@@ -154,7 +154,6 @@ trait SelectQueryCompiler
         };
 
         $result = '';
-        $index = 0;
         foreach ($columns as $column) {
             $resolvedColumn = null;
             if ($column instanceof ColumnClause) {
@@ -170,11 +169,9 @@ trait SelectQueryCompiler
             }
 
             if (! is_null($resolvedColumn)) {
-                if ($index > 0) $result .= ', ';
+                if ($result) $result .= ', ';
                 $result .= $resolvedColumn;
             }
-
-            $index++;
         }
 
         return $result;
@@ -193,7 +190,7 @@ trait SelectQueryCompiler
             if (is_string($expression)) {
                 $result = $this->compileTable($expression);
             } elseif ($expression instanceof Query) {
-                $result = '(' . $this->compileQuery($expression) . ') AS ' . $table->getAlias();
+                $result = '(' . $this->compileQuery($expression) . ') AS ' . $this->wrapIdentifier($table->getAlias());
             }
         }
         elseif ($table instanceof RawFrom) {

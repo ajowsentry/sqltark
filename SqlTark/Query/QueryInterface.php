@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace SqlTark\Query;
 
 use Closure;
+use SqlTark\Query;
 use SqlTark\Component\ComponentType;
 use SqlTark\Component\AbstractComponent;
-use SqlTark\Query;
 
 interface QueryInterface
 {

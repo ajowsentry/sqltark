@@ -6,13 +6,13 @@ namespace SqlTark\Compiler\Traits;
 
 use SqlTark\Query;
 use InvalidArgumentException;
-use SqlTark\Component\AbstractCondition;
+use SqlTark\Component\LimitClause;
 use SqlTark\Component\AbstractFrom;
 use SqlTark\Component\AbstractJoin;
+use SqlTark\Component\OffsetClause;
 use SqlTark\Component\AbstractOrder;
 use SqlTark\Component\ComponentType;
-use SqlTark\Component\LimitClause;
-use SqlTark\Component\OffsetClause;
+use SqlTark\Component\AbstractCondition;
 
 trait DeleteQueryCompiler
 {
