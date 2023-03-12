@@ -14,12 +14,16 @@ trait ExpressionCompiler
     /**
      * {@inheritdoc}
      */
-    public function compileLiteral(Literal $literal): string
+    public function compileLiteral(Literal $literal, bool $withAlias = true): string
     {
         $value = $literal->getValue();
-        $result = $this->quote($value);
+        $result = $this->wrapFunction($this->quote($value), $literal->getWrap());
 
-        return $this->wrapFunction($result, $literal->getWrap());
+        if($withAlias && !is_null($alias = $literal->getAlias())) {
+            $result .= ' AS ' . $this->wrapIdentifier($alias);
+        }
+        
+        return $result;
     }
 
     /**
@@ -32,12 +36,7 @@ trait ExpressionCompiler
             return $this->wrapFunction('*', $column->getWrap());
         }
 
-        $aliasSplit = array_map(
-            function ($item) {
-                return $this->wrapIdentifier($item);
-            },
-            Helper::extractAlias($result)
-        );
+        $aliasSplit = array_map(fn($item) => $this->wrapIdentifier($item), Helper::extractAlias($result));
 
         $columnExression = $this->wrapFunction($aliasSplit[0], $column->getWrap());
         if ($withAlias && isset($aliasSplit[1])) {
@@ -52,28 +51,36 @@ trait ExpressionCompiler
      */
     public function compileRaw(string $expression, iterable $bindings = []): string
     {
-        $expression = trim($expression, " \t\n\r\0\x0B,");
-        return Helper::replaceAll($expression, $this->parameterPlaceholder, function ($index) use ($bindings) {
-            return $this->compileExpression($bindings[$index], false);
-        });
+        return Helper::replaceAll(
+            trim($expression, " \t\n\r\0\x0B,"),
+            $this->parameterPlaceholder,
+            fn ($index) => $this->compileExpression($bindings[$index], false)
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function compileVariable(Variable $variable): string
+    public function compileVariable(Variable $variable, bool $withAlias = true): string
     {
         if(is_null($variable->getName())) {
-            return $this->wrapFunction($this->parameterPlaceholder, $variable->getWrap());
+            $result = $this->wrapFunction($this->parameterPlaceholder, $variable->getWrap());
+        }
+        else {
+            $result = trim($variable->getName());
+
+            if (isset($result[0]) && $result[0] != $this->variablePrefix) {
+                $result = $this->variablePrefix . $result;
+            }
+
+            $result = $this->wrapFunction($result, $variable->getWrap());
         }
 
-        $result = trim($variable->getName());
-
-        if (isset($result[0]) && $result[0] != $this->variablePrefix) {
-            $result = $this->variablePrefix . $result;
+        if($withAlias && !is_null($alias = $variable->getAlias())) {
+            $result .= ' AS ' . $this->wrapIdentifier($alias);
         }
 
-        return $this->wrapFunction($result, $variable->getWrap());
+        return $result;
     }
 
     /**

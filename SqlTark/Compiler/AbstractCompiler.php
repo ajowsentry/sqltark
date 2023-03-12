@@ -63,7 +63,7 @@ abstract class AbstractCompiler
     public function compileExpression(AbstractExpression|Query $expression, bool $withAlias = true): string
     {
         if($expression instanceof Literal)
-            return $this->compileLiteral($expression);
+            return $this->compileLiteral($expression, $withAlias);
 
         if($expression instanceof Column)
             return $this->compileColumn($expression, $withAlias);
@@ -72,7 +72,7 @@ abstract class AbstractCompiler
             return $this->compileRaw($expression->getExpression(), $expression->getBindings());
 
         if($expression instanceof Variable)
-            return $this->compileVariable($expression);
+            return $this->compileVariable($expression, $withAlias);
 
         if($expression instanceof Query)
             return $this->compileQuery($expression);
@@ -104,9 +104,10 @@ abstract class AbstractCompiler
 
     /**
      * @param Literal $literal
+     * @param bool $withAlias
      * @return string
      */
-    public abstract function compileLiteral(Literal $literal): string;
+    public abstract function compileLiteral(Literal $literal, bool $withAlias = true): string;
 
     /**
      * @param Column $column
@@ -125,7 +126,7 @@ abstract class AbstractCompiler
      * @param Variable $variable
      * @return string
      */
-    public abstract function compileVariable(Variable $variable): string;
+    public abstract function compileVariable(Variable $variable, bool $withAlias = true): string;
 
     /**
      * @param Query $query

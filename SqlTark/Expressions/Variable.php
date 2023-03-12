@@ -10,6 +10,11 @@ final class Variable extends AbstractExpression
      * @var ?string $name
      */
     protected ?string $name;
+    
+    /**
+     * @var ?string $alias
+     */
+    private ?string $alias;
 
     /**
      * @return ?string
@@ -29,10 +34,39 @@ final class Variable extends AbstractExpression
     }
 
     /**
-     * @param ?string $name
+     * @return ?string
      */
-    public function __construct(?string $name = null)
+    public function getAlias(): ?string
+    {
+        return $this->alias;
+    }
+
+    /**
+     * @param ?string $value
+     * @return void
+     */
+    public function setAlias(?string $value): void
+    {
+        $this->alias = $value;
+    }
+
+    /**
+     * @param string $value
+     * @return static
+     */
+    public function as(string $value): static
+    {
+        $this->alias = $value;
+        return $this;
+    }
+
+    /**
+     * @param ?string $name
+     * @param ?string $alias
+     */
+    public function __construct(?string $name = null, ?string $alias = null)
     {
         $this->name = $name;
+        $this->alias = $alias;
     }
 }
