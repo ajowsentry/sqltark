@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use SqlTark\Compiler\MySqlCompiler;
+use SqlTark\Component\ComponentType;
+use SqlTark\Expressions;
 use SqlTark\Query;
 
 final class SelectQueryTest extends TestCase
@@ -13,8 +15,52 @@ final class SelectQueryTest extends TestCase
         $query = new Query;
         $query->setCompiler(new MySqlCompiler);
 
-        $output = "SELECT * FROM `table`";
-        $query->from('table');
+        $output = "SELECT * FROM `table` AS `t`";
+        $query->from('table as t');
+        $this->assertEquals($output, $query->compile());
+
+        $output = "SELECT `t`.`column1` FROM `table` AS `t`";
+        $query->select('t.column1');
+        $this->assertEquals($output, $query->compile());
+
+        $output = "SELECT `t`.`column1`, 'asdf' FROM `table` AS `t`";
+        $query->select(Expressions::literal('asdf'));
+        $this->assertEquals($output, $query->compile());
+
+        $output = "SELECT `t`.`column1`, 'asdf', TRUE FROM `table` AS `t`";
+        $query->select(Expressions::literal(true));
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " JOIN `table2` AS `tt` ON `t`.`id` = `tt`.`id`";
+        $query->join('table2 AS tt', 't.id', '=', 'tt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " LEFT JOIN `table3` AS `ttt` ON `t`.`id` = `ttt`.`id`";
+        $query->leftJoin('table3 AS ttt', 't.id', '=', 'ttt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " RIGHT JOIN `table3` AS `ttt` ON `t`.`id` = `ttt`.`id`";
+        $query->rightJoin('table3 AS ttt', 't.id', '=', 'ttt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " OUTER JOIN `table2` AS `tt` ON `t`.`id` = `tt`.`id`";
+        $query->outerJoin('table2 AS tt', 't.id', '=', 'tt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " LEFT OUTER JOIN `table3` AS `ttt` ON `t`.`id` = `ttt`.`id`";
+        $query->leftOuterJoin('table3 AS ttt', 't.id', '=', 'ttt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " RIGHT OUTER JOIN `table3` AS `ttt` ON `t`.`id` = `ttt`.`id`";
+        $query->rightOuterJoin('table3 AS ttt', 't.id', '=', 'ttt.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " CROSS JOIN `table3` AS `ttt`";
+        $query->crossJoin('table3 as ttt');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " NATURAL JOIN `table3` AS `ttt`";
+        $query->naturalJoin('table3 as ttt');
         $this->assertEquals($output, $query->compile());
 
         $output .= " WHERE `a` = 1";
@@ -85,8 +131,33 @@ final class SelectQueryTest extends TestCase
         $query->contains('h', 'zen%', true, '!');
         $this->assertEquals($output, $query->compile());
 
-        $output .= " AND MAX(`x`) > '2023-03-10 22:22:22'";
-        $query->conditionRaw('MAX(`x`) > ?', new DateTime('2023-03-10 22:22:22'));
+        $output .= " AND MAX(`x`) > '2022-02-22 22:22:22'";
+        $query->conditionRaw('MAX(`x`) > ?', new DateTime('2022-02-22 22:22:22'));
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " GROUP BY `t`.`id`";
+        $query->groupBy('t.id');
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " HAVING 1 = 1";
+        $query->having()->equals(Expressions::literal(1), Expressions::literal(1));
+        $this->assertEquals($output, $query->compile());
+
+        $output .= " LIMIT 100, 18446744073709551615";
+        $query->offset(100);
+        $this->assertEquals($output, $query->compile());
+
+        $output = substr($output, 0, -32);
+        $output .= " LIMIT 100, 123";
+        $query->limit(123);
+        $this->assertEquals($output, $query->compile());
+
+        $query->clearComponents(ComponentType::Limit);
+        $query->clearComponents(ComponentType::Offset);
+
+        $output = substr($output, 0, -15);
+        $output .= " LIMIT 222";
+        $query->limit(222);
         $this->assertEquals($output, $query->compile());
     }
 }

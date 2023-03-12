@@ -135,7 +135,14 @@ abstract class AbstractQuery implements QueryInterface
      */
     public function clearComponents(?ComponentType $componentType = null): static
     {
-        $this->components = null;
+        if(is_null($componentType)) {
+            $this->components = null;
+        }
+
+        elseif($this->hasComponent($componentType)) {
+            unset($this->components[$componentType->value]);
+        }
+
         return $this;
     }
 
@@ -149,11 +156,7 @@ abstract class AbstractQuery implements QueryInterface
         }
 
         if(is_null($componentType)) {
-            $result = [];
-            foreach($this->components as $components) {
-                array_push($result, ...$components);
-            }
-            return $result;
+            return Helper::flatten($this->components);
         }
 
         $key = $componentType->value;

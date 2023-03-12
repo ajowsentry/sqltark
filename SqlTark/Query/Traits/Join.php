@@ -148,7 +148,7 @@ trait Join
         $join = new QueryJoin;
         is_string($table) ? $join->from($table) : $join->fromQuery($table);
 
-        $join->asType(JoinType::NaturalJoin);
+        $join->asType(JoinType::CrossJoin);
         $component = new JoinClause;
         $component->setJoin($join);
 

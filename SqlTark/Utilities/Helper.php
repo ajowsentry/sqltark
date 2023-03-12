@@ -179,5 +179,20 @@ final class Helper
         throw new InvalidArgumentException(sprintf($message, $type));
     }
 
+    /**
+     * @param array<mixed,mixed> $list
+     * @return list<mixed>
+     */
+    public static function flatten(iterable $list): iterable
+    {
+        $result = [];
+
+        foreach ($list as $item) is_iterable($item)
+            ? array_push($result, ...self::flatten($item))
+            : array_push($result, $item);
+
+        return $result;
+    }
+
     private function __construct() { }
 }
