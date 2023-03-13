@@ -22,6 +22,7 @@ class Query extends AbstractQuery implements Stringable, ConditionInterface
         Traits\From,
         Traits\GroupBy,
         Traits\Join,
+        Traits\Manipulate,
         Traits\Order,
         Traits\Paging,
         Traits\Select;
@@ -29,7 +30,7 @@ class Query extends AbstractQuery implements Stringable, ConditionInterface
     /**
      * @var ?AbstractCompiler $compiler
      */
-    private ?AbstractCompiler $compiler = null;
+    protected ?AbstractCompiler $compiler = null;
 
     /**
      * @return static Self object
@@ -69,13 +70,13 @@ class Query extends AbstractQuery implements Stringable, ConditionInterface
     /**
      * @return string
      */
-    public function compile(): string
+    public function compile(?Query $query = null): string
     {
         if(is_null($this->compiler)) {
             throw new RuntimeException("Compiler is not set.");
         }
 
-        return $this->compiler->compileQuery($this);
+        return $this->compiler->compileQuery($query ?? $this);
     }
 
     /**
