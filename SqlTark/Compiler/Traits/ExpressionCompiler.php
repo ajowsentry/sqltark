@@ -32,16 +32,14 @@ trait ExpressionCompiler
     public function compileColumn(Column $column, bool $withAlias = true): string
     {
         $result = trim($column->getName());
-        if (empty($result) || $result == '*') {
+        if (empty($result) || $result == '*')
             return $this->wrapFunction('*', $column->getWrap());
-        }
 
         $aliasSplit = array_map(fn($item) => $this->wrapIdentifier($item), Helper::extractAlias($result));
 
         $columnExression = $this->wrapFunction($aliasSplit[0], $column->getWrap());
-        if ($withAlias && isset($aliasSplit[1])) {
+        if ($withAlias && isset($aliasSplit[1]))
             $columnExression .= ' AS ' . $aliasSplit[1];
-        }
 
         return $columnExression;
     }
@@ -69,16 +67,14 @@ trait ExpressionCompiler
         else {
             $result = trim($variable->getName());
 
-            if (isset($result[0]) && $result[0] != $this->variablePrefix) {
+            if (isset($result[0]) && $result[0] != $this->variablePrefix)
                 $result = $this->variablePrefix . $result;
-            }
 
             $result = $this->wrapFunction($result, $variable->getWrap());
         }
 
-        if($withAlias && !is_null($alias = $variable->getAlias())) {
+        if($withAlias && !is_null($alias = $variable->getAlias()))
             $result .= ' AS ' . $this->wrapIdentifier($alias);
-        }
 
         return $result;
     }
@@ -90,11 +86,7 @@ trait ExpressionCompiler
      */
     protected function wrapFunction(string $value, ?string $wrapper): string
     {
-        if (is_string($wrapper)) {
-            return $wrapper . "($value)";
-        }
-
-        return $value;
+        return !is_null($wrapper) ? "{$wrapper}({$value})" : $value;
     }
 
     /**
@@ -103,23 +95,16 @@ trait ExpressionCompiler
      */
     protected function wrapIdentifier(string $value): string
     {
-        $splitName = [];
-        foreach (explode('.', $value) as $item) {
-            $item = trim($item);
-            if (!empty($item)) {
-                if ($item != '*') {
-                    if ($item[0] != $this->openingIdentifier) {
-                        $item = $this->openingIdentifier . $item;
-                    }
+        return join('.', array_reduce(preg_split('/\s*\.\s*/', $value, -1, PREG_SPLIT_NO_EMPTY), function($acc, $item) {
+            if ($item != '*' && $item[0] != $this->openingIdentifier)
+                $item = $this->openingIdentifier . $item;
 
-                    if ($item[strlen($item) - 1] != $this->closingIdentifier) {
-                        $item = $item . $this->closingIdentifier;
-                    }
-                }
-                $splitName[] = $item;
-            }
-        }
+            if ($item != '*' && $item[strlen($item) - 1] != $this->closingIdentifier)
+                $item = $item . $this->closingIdentifier;
 
-        return join('.', $splitName);
+            array_push($acc, $item);
+
+            return $acc;
+        }, []));
     }
 }

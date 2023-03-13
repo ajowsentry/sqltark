@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SqlTark\Compiler\Traits;
+namespace SqlTark\Compiler\MySql;
 
 use SqlTark\Query;
 use SqlTark\Utilities\Helper;
@@ -33,12 +33,9 @@ use SqlTark\Component\GroupCondition;
 use SqlTark\Component\ExistsCondition;
 use SqlTark\Component\BetweenCondition;
 use SqlTark\Component\AbstractCondition;
-use SqlTark\Expressions\AbstractExpression;
 
 trait SelectQueryCompiler
 {
-    use ExpressionCompiler;
-
     /**
      * {@inheritdoc}
      */
@@ -134,31 +131,12 @@ trait SelectQueryCompiler
      */
     protected function compileColumns(iterable $columns, bool $withAlias): string
     {
-        $expressionResolver = function ($expression) use ($withAlias) {
-
-            if ($expression instanceof AbstractExpression) {
-                return $this->compileExpression($expression, $withAlias);
-            }
-
-            elseif ($expression instanceof Query) {
-                $resolvedValue = $this->compileQuery($expression);
-                $resolvedValue = "($resolvedValue)";
-
-                if ($withAlias) {
-                    $alias = $expression->getAlias();
-                    if ($alias) $resolvedValue .= ' AS ' . $this->wrapIdentifier($alias);
-                }
-
-                return $resolvedValue;
-            }
-        };
-
         $result = '';
         foreach ($columns as $column) {
             $resolvedColumn = null;
             if ($column instanceof ColumnClause) {
                 $columnContent = $column->getColumn();
-                $resolvedColumn = $expressionResolver($columnContent);
+                $resolvedColumn = $this->compileExpression($columnContent, $withAlias);
             }
 
             elseif ($column instanceof RawColumn) {
@@ -238,7 +216,6 @@ trait SelectQueryCompiler
     protected function compileJoin(iterable $joins): string
     {
         $result = '';
-        $index = 0;
         foreach ($joins as $component) {
             $resolvedJoin = null;
             if ($component instanceof JoinClause) {
@@ -259,10 +236,9 @@ trait SelectQueryCompiler
             }
 
             if (!empty($resolvedJoin)) {
-                if ($index > 0) $result .= ' ';
+                if ($result) $result .= ' ';
                 $result .= $resolvedJoin;
             }
-            $index++;
         }
 
         return $result;
@@ -275,20 +251,7 @@ trait SelectQueryCompiler
      */
     protected function compileConditions(iterable $conditions, ComponentType $type = ComponentType::Where): string
     {
-        $expressionResolver = function ($expression, $wrapQuery = true) {
-
-            if ($expression instanceof AbstractExpression) {
-                return $this->compileExpression($expression, false);
-            }
-            elseif ($expression instanceof Query) {
-                $resolvedValue = $this->compileQuery($expression);
-                if ($wrapQuery) $resolvedValue = "($resolvedValue)";
-                return $resolvedValue;
-            }
-        };
-
         $result = '';
-        $index = 0;
         foreach ($conditions as $condition) {
             $resolvedCondition = null;
             if ($condition instanceof CompareClause) {
@@ -296,12 +259,12 @@ trait SelectQueryCompiler
                 $right = $condition->getRight();
                 $operator = $condition->getOperator();
 
-                $resolvedLeft = $expressionResolver($left);
-                $resolvedRight = $expressionResolver($right);
+                $resolvedLeft = $this->compileExpression($left, false);
+                $resolvedRight = $this->compileExpression($right, false);
 
                 $resolvedCondition = "$resolvedLeft $operator $resolvedRight";
                 if ($condition->getNot()) {
-                    $resolvedCondition = "NOT ($resolvedCondition)";
+                    $resolvedCondition = "NOT ({$resolvedCondition})";
                 }
             }
             elseif ($condition instanceof BetweenCondition) {
@@ -309,9 +272,9 @@ trait SelectQueryCompiler
                 $lower = $condition->getLower();
                 $higher = $condition->getHigher();
 
-                $resolvedColumn = $expressionResolver($column);
-                $resolvedLower = $expressionResolver($lower);
-                $resolvedHigher = $expressionResolver($higher);
+                $resolvedColumn = $this->compileExpression($column, false);
+                $resolvedLower = $this->compileExpression($lower, false);
+                $resolvedHigher = $this->compileExpression($higher, false);
 
                 $resolvedCondition = $resolvedColumn;
                 if ($condition->getNot()) {
@@ -330,12 +293,12 @@ trait SelectQueryCompiler
             elseif ($condition instanceof NullCondition) {
                 $column = $condition->getColumn();
 
-                $resolvedCondition = $expressionResolver($column);
+                $resolvedCondition = $this->compileExpression($column, false);
                 $resolvedCondition .= $condition->getNot() ? ' IS NOT NULL' : ' IS NULL';
             }
             elseif ($condition instanceof LikeCondition) {
                 $column = $condition->getColumn();
-                $resolvedColumn = $expressionResolver($column);
+                $resolvedColumn = $this->compileExpression($column, false);
 
                 $value = $condition->getValue();
                 $escape = $condition->getEscapeCharacter();
@@ -369,7 +332,7 @@ trait SelectQueryCompiler
                 $extraEscape = $condition->getType() != LikeType::Like && (empty($escape) || $escape == '\\');
                 $value = $this->quote($value, $extraEscape);
 
-                $resolvedCondition = "$resolvedColumn $operator $value";
+                $resolvedCondition = "{$resolvedColumn} {$operator} {$value}";
                 if ($escape) {
                     $resolvedCondition .= " ESCAPE " . $this->quote($escape);
                 }
@@ -378,22 +341,21 @@ trait SelectQueryCompiler
                 $column = $condition->getColumn();
                 $values = $condition->getValues();
 
-                $resolvedColumn = $expressionResolver($column);
+                $resolvedColumn = $this->compileExpression($column, false);
                 $resolvedValues = '';
                 if ($values instanceof Query) {
                     $resolvedValues = $this->compileQuery($values);
-                } else {
-                    $first = true;
-                    foreach ($values as $value) {
-                        if (!$first) $resolvedValues .= ', ';
-                        $resolvedValues .= $expressionResolver($value);
-                        $first = false;
-                    }
+                }
+                else {
+                    $resolvedValues .= join(', ', array_map(
+                        fn($value) => $this->compileExpression($value, false),
+                        $values
+                    ));
                 }
 
                 $resolvedCondition = $resolvedColumn;
                 $resolvedCondition .= $condition->getNot() ? ' NOT IN ' : ' IN ';
-                $resolvedCondition .= "($resolvedValues)";
+                $resolvedCondition .= "({$resolvedValues})";
             }
             elseif ($condition instanceof GroupCondition) {
                 $clauses = $condition->getCondition()->getComponents($type, AbstractCondition::class);
@@ -410,11 +372,9 @@ trait SelectQueryCompiler
             }
 
             if ($resolvedCondition) {
-                if ($index > 0) $result .= $condition->getOr() ? ' OR ' : ' AND ';
+                if ($result) $result .= $condition->getOr() ? ' OR ' : ' AND ';
                 $result .= $resolvedCondition;
             }
-
-            $index++;
         }
 
         return $result;
@@ -468,26 +428,14 @@ trait SelectQueryCompiler
      */
     protected function compileOrderBy($columns): string
     {
-        $expressionResolver = function ($expression) {
-            if ($expression instanceof AbstractExpression) {
-                return $this->compileExpression($expression, false);
-            } elseif ($expression instanceof Query) {
-                $resolvedValue = $this->compileQuery($expression);
-                $resolvedValue = "($resolvedValue)";
-
-                return $resolvedValue;
-            }
-        };
-
         $result = '';
-        $index = 0;
         foreach ($columns as $column) {
             $resolvedColumn = null;
             if ($column instanceof OrderClause) {
 
                 $columnContent = $column->getColumn();
                 $isAscending = $column->isAscending();
-                $resolvedColumn = $expressionResolver($columnContent);
+                $resolvedColumn = $this->compileExpression($columnContent, false);
                 $resolvedColumn .= $isAscending ? ' ASC' : ' DESC';
             }
             elseif ($column instanceof RawOrder) {
@@ -497,16 +445,15 @@ trait SelectQueryCompiler
                     $column->getBindings()
                 );
             }
+
             elseif ($column instanceof RandomOrder) {
                 $resolvedColumn = 'RAND()';
             }
 
             if (!is_null($resolvedColumn)) {
-                if ($index > 0) $result .= ', ';
+                if ($result) $result .= ', ';
                 $result .= $resolvedColumn;
             }
-
-            $index++;
         }
 
         if (empty($result)) {
@@ -547,9 +494,8 @@ trait SelectQueryCompiler
     protected function compileCombine(iterable $combines): string
     {
         $result = '';
-        $index = 0;
         foreach($combines as $combine) {
-            if($index > 0) $result .= ' ';
+            if($result) $result .= ' ';
 
             $result .= $combine->getOperation()->syntaxOf();
             if($combine->isAll()) {
@@ -557,7 +503,6 @@ trait SelectQueryCompiler
             }
 
             $result .= ' ' . $this->compileQuery($combine->getQuery());
-            $index++;
         }
 
         return $result;
@@ -570,10 +515,8 @@ trait SelectQueryCompiler
     protected function compileCte(iterable $tables): string
     {
         $result = '';
-        
-        $index = 0;
         foreach($tables as $fromClause) {
-            if($index > 0) $result .= ', ';
+            if($result) $result .= ', ';
             else $result .= 'WITH ';
 
             $result .= $fromClause->getAlias();
@@ -582,8 +525,6 @@ trait SelectQueryCompiler
                 $query = $fromClause->getTable();
                 $result .= ' AS (' . $this->compileQuery($query) . ')';
             }
-
-            $index++;
         }
 
         return $result;

@@ -7,7 +7,7 @@ namespace SqlTark\Compiler;
 class MySqlCompiler extends AbstractCompiler
 {
     use Traits\ExpressionCompiler,
-        Traits\SelectQueryCompiler,
+        MySql\SelectQueryCompiler,
         Traits\InsertQueryCompiler,
         Traits\UpdateQueryCompiler,
         Traits\DeleteQueryCompiler;

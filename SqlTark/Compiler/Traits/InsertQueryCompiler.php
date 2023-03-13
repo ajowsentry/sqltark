@@ -12,12 +12,9 @@ use SqlTark\Component\FromClause;
 use SqlTark\Component\InsertClause;
 use SqlTark\Component\ComponentType;
 use SqlTark\Component\InsertQueryClause;
-use SqlTark\Expressions\AbstractExpression;
 
 trait InsertQueryCompiler
 {
-    use ExpressionCompiler, SelectQueryCompiler;
-
     /**
      * {@inheritdoc}
      */
@@ -42,74 +39,40 @@ trait InsertQueryCompiler
             $table = $from->getTable();
             $resolvedTable = $this->wrapIdentifier($table);
         }
+
         elseif($from instanceof RawFrom) {
-            $expression = $from->getExpression();
-            $bindings = $from->getBindings();
-            $resolvedTable = $this->compileRaw($expression, $bindings);
-        }
-        else {
-            $class = Helper::getType($from);
-            throw new InvalidArgumentException(
-                "Could not resolve '$class' for insert query"
+            $resolvedTable = $this->compileRaw(
+                $from->getExpression(),
+                $from->getBindings(),
             );
         }
 
-        $result = "INSERT INTO $resolvedTable ";
-        if($values instanceof InsertClause) {
-            $result .= '(';
-            $index = 0;
-            foreach($values->getColumns() as $column) {
-                if($index > 0) {
-                    $result .= ', ';
-                }
-
-                $result .= $this->wrapIdentifier($column);
-                $index++;
-            }
-            $result .= ') VALUES ';
-
-            $first = true;
-            foreach ($values->getValues() as $row) {
-                if (!$first) {
-                    $result .= ', ';
-                }
-
-                $result .= '(';
-                $index = 0;
-                foreach ($row as $value) {
-                    $resolvedValue = null;
-                    if ($value instanceof AbstractExpression) {
-                        $resolvedValue = $this->compileExpression($value, false);
-                    } elseif ($value instanceof Query) {
-                        $resolvedValue = '(' . $this->compileQuery($value) . ')';
-                    }
-
-                    if ($index > 0) {
-                        $result .= ', ';
-                    }
-
-                    $result .= $resolvedValue;
-                    $index++;
-                }
-                $result .= ')';
-
-                $first = false;
-            }
+        else {
+            $class = Helper::getType($from);
+            throw new InvalidArgumentException(
+                "Could not resolve '{$class}' for insert query"
+            );
         }
+
+        $result = "INSERT INTO {$resolvedTable} ";
+
+        if($values instanceof InsertClause) {
+            $result .= '(' . join(', ', array_map(fn($value) => $this->wrapIdentifier($value), $values->getColumns())) . ') VALUES ';
+
+            $valuesPart = '';
+            foreach ($values->getValues() as $row) {
+                if ($valuesPart)
+                    $valuesPart .= ', ';
+
+                $valuesPart .= '(' . join(', ', array_map(fn($value) => $this->compileExpression($value, false), $row)) . ')';
+            }
+            $result .= $valuesPart;
+        }
+
         elseif($values instanceof InsertQueryClause) {
             $columns = $values->getColumns();
             if(!empty($columns)) {
-                $result .= '(';
-                $index = 0;
-                foreach($columns as $column) {
-                    if($index > 0) {
-                        $result .= ', ';
-                    }
-
-                    $result .= $this->wrapIdentifier($column);
-                    $index++;
-                }
-                $result .= ') ';
+                $result .= '(' . join(', ', array_map(fn($column) => $this->wrapIdentifier($column), $columns)) . ')';
             }
 
             $query = $values->getQuery();

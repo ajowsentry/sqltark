@@ -7,7 +7,7 @@ namespace SqlTark\Compiler;
 class SqlServerCompiler extends AbstractCompiler
 {
     use Traits\ExpressionCompiler,
-        Traits\SelectQueryCompiler,
+        SqlServer\SelectQueryCompiler,
         Traits\InsertQueryCompiler,
         Traits\UpdateQueryCompiler,
         Traits\DeleteQueryCompiler;

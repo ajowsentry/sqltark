@@ -74,8 +74,13 @@ abstract class AbstractCompiler
         if($expression instanceof Variable)
             return $this->compileVariable($expression, $withAlias);
 
-        if($expression instanceof Query)
-            return $this->compileQuery($expression);
+        if($expression instanceof Query) {
+            $alias = $withAlias && $expression->getAlias()
+                ? (' AS ' . $this->wrapIdentifier($expression->getAlias()))
+                : '';
+
+            return '(' . $this->compileQuery($expression) . ')' . $alias;
+        }
 
         Helper::throwInvalidArgumentException(
             "Could not resolve expression from '%s' type.",
@@ -158,4 +163,10 @@ abstract class AbstractCompiler
      * @return string
      */
     public abstract function quote(mixed $value, bool $quoteLike = false): string;
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    protected abstract function wrapIdentifier(string $value): string;
 }

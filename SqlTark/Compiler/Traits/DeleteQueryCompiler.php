@@ -16,8 +16,6 @@ use SqlTark\Component\AbstractCondition;
 
 trait DeleteQueryCompiler
 {
-    use ExpressionCompiler, SelectQueryCompiler;
-
     /**
      * {@inheritdoc}
      */
