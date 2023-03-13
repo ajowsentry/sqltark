@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Change parameter type of `limit` and `offset` from `int` to `scalar`
-- Change parameter of `resolveExpressionList` function in `SqlTark\Utilities\Helper`
-  key type to `string|int`
+- Change parameter of `resolveExpressionList` function in
+  `SqlTark\Utilities\Helper` key type to `string|int`
 
 ## [0.1.1] - 2023-03-12
 
