@@ -11,43 +11,43 @@ use SqlTark\Component\ComponentType;
 trait Paging
 {
     /**
-     * @param int $limit
+     * @param scalar $limit
      * @return static Self object
      */
-    public function limit(int $limit): static
+    public function limit(mixed $limit): static
     {
         $component = new LimitClause;
-        $component->setLimit($limit);
+        $component->setLimit(intval($limit));
 
         return $this->addOrReplaceComponent(ComponentType::Limit, $component);
     }
 
     /**
-     * @param int $offset
+     * @param scalar $offset
      * @return static Self object
      */
-    public function offset(int $offset): static
+    public function offset(mixed $offset): static
     {
         $component = new OffsetClause;
-        $component->setOffset($offset);
+        $component->setOffset(intval($offset));
 
         return $this->addOrReplaceComponent(ComponentType::Offset, $component);
     }
 
     /**
-     * @param int $take
+     * @param scalar $take
      * @return static Self object
      */
-    public function take(int $take): static
+    public function take(mixed $take): static
     {
         return $this->limit($take);
     }
 
     /**
-     * @param int $skip
+     * @param scalar $skip
      * @return static Self object
      */
-    public function skip(int $skip): static
+    public function skip(mixed $skip): static
     {
         return $this->offset($skip);
     }
