@@ -49,11 +49,12 @@ final class Helper
     }
 
     /**
-     * @param list<mixed> $expressionList
+     * @template T of string|int
+     * @param array<T,mixed> $expressionList
      * @param bool $stringAsColumn
-     * @return list<Query|AbstractExpression>
+     * @return array<T,Query|AbstractExpression>
      */
-    public static function resolveExpressionList(iterable $expressionList, bool $stringAsColumn = false): array
+    public static function resolveExpressionList(array $expressionList, bool $stringAsColumn = false): array
     {
         return array_map(fn($item) => self::resolveExpression($item, $stringAsColumn), $expressionList);
     }

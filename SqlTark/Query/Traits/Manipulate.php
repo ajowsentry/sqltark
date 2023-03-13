@@ -36,7 +36,7 @@ trait Manipulate
 
         $component = new InsertClause;
         $component->setColumns(array_keys($keyValues));
-        $component->setValues([Helper::resolveExpressionList($keyValues)]);
+        $component->setValues([Helper::resolveExpressionList(array_values($keyValues), false)]);
 
         return $this->addOrReplaceComponent(ComponentType::Insert, $component);
     }
