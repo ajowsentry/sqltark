@@ -33,6 +33,7 @@ use SqlTark\Component\GroupCondition;
 use SqlTark\Component\ExistsCondition;
 use SqlTark\Component\BetweenCondition;
 use SqlTark\Component\AbstractCondition;
+use SqlTark\Expressions;
 
 trait SelectQueryCompiler
 {
@@ -60,7 +61,27 @@ trait SelectQueryCompiler
             $result .= $resolvedCte . ' ';
         }
 
-        $result .= $this->compileSelect($selects, $query->isDistict());
+        if($offset?->hasOffset() && empty($orderBy)) {
+            $orderByComponent = new OrderClause;
+            $orderByComponent->setColumn(Expressions::column('__order__'));
+            array_push($orderBy, $orderByComponent);
+
+            if(empty($selects)) {
+                $selectComponent = new ColumnClause;
+                $selectComponent->setColumn(Expressions::column('*'));
+                array_push($selects, $selectComponent);
+            }
+
+            $selectComponent = new ColumnClause;
+            $selectComponent->setColumn(Expressions::literal(0)->as('__order__'));
+            array_push($selects, $selectComponent);
+        }
+
+        $result .= $this->compileSelect(
+            $selects,
+            $query->isDistict(),
+            !$offset?->hasOffset() && $limit?->hasLimit() ? $limit : null
+        );
 
         $resolvedFrom = $this->compileFrom($from);
         if($resolvedFrom) {
@@ -110,11 +131,16 @@ trait SelectQueryCompiler
      * @param bool $isDistinct
      * @return string
      */
-    protected function compileSelect(iterable $columns, bool $isDistinct): string
+    protected function compileSelect(iterable $columns, bool $isDistinct, ?LimitClause $limitClause = null): string
     {
         $result = $this->compileColumns($columns, true);
         if (empty($result)) {
             $result = '*';
+        }
+
+        if($limitClause?->hasLimit()) {
+            $limit = $limitClause->getLimit();
+            $result = "TOP {$limit} {$result}";
         }
 
         if($isDistinct) {
@@ -471,17 +497,13 @@ trait SelectQueryCompiler
     protected function compilePaging(?LimitClause $limitClause, ?OffsetClause $offsetClause): string
     {
         $resolvedPaging = '';
-        if ($limitClause && $limitClause->hasLimit()) {
-            $limit = $limitClause->getLimit();
-            if ($offsetClause && $offsetClause->hasOffset()) {
-                $offset = $offsetClause->getOffset();
-                $resolvedPaging = "LIMIT {$offset}, {$limit}";
+
+        if($offsetClause?->hasOffset()) {
+            $resolvedPaging .= 'OFFSET ' . $offsetClause->getOffset() . ' ROWS';
+
+            if($limitClause?->hasLimit()) {
+                $resolvedPaging .= ' FETCH NEXT ' . $limitClause->getLimit() . ' ROWS ONLY';
             }
-            else $resolvedPaging = "LIMIT {$limit}";
-        }
-        elseif ($offsetClause && $offsetClause->hasOffset()) {
-            $offset = $offsetClause->getOffset();
-            $resolvedPaging = "LIMIT {$offset}, " . $this->maxValue;
         }
 
         return $resolvedPaging;

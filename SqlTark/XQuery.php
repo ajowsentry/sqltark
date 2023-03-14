@@ -158,15 +158,14 @@ class XQuery extends Query
      */
     public function execute(null|Query|string $query = null, array $params = [], array $types = []): PDOStatement
     {
-        if(func_num_args() === 0) {
-            $query = $this->compiler->compileQuery($query ?? $this);
-        }
-
         if ($query instanceof QueryInterface) {
             $sql = $this->compiler->compileQuery($query);
         }
         elseif (is_string($query)) {
             $sql = $query;
+        }
+        else {
+            $sql = $this->compiler->compileQuery($this);
         }
 
         if (empty($sql)) {
@@ -308,12 +307,12 @@ class XQuery extends Query
      * @param string $sql
      * @param ?list<mixed> $errorInfo
      * @param ?PDOStatement $statement
-     * @return mixed
+     * @return void
      */
-    private function triggerOnExecute(string $sql, ?array $errorInfo = null, ?PDOStatement $statement = null): mixed
+    private function triggerOnExecute(string $sql, ?array $errorInfo = null, ?PDOStatement $statement = null): void
     {
-        return is_callable($this->onExecuteCallback)
-            ? call_user_func_array($this->onExecuteCallback, [$sql, $errorInfo, $statement])
-            : null;
+        if(is_callable($this->onExecuteCallback)) {
+            call_user_func_array($this->onExecuteCallback, [$sql, $errorInfo, $statement]);
+        }
     }
 }

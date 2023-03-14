@@ -6,6 +6,7 @@ namespace SqlTark\Connection;
 
 use InvalidArgumentException;
 use PDO;
+use PDOException;
 
 abstract class AbstractConnection
 {
@@ -46,11 +47,11 @@ abstract class AbstractConnection
     }
 
     /**
-     * @param array<string,mixed> $config
+     * @param Config|array<string,mixed> $config
      */
-    public function __construct($config = [])
+    public function __construct(Config|array $config = [])
     {
-        $this->config = new Config($config);
+        $this->config = $config instanceof Config ? $config : new Config($config);
     }
 
     /**
@@ -64,26 +65,32 @@ abstract class AbstractConnection
     }
 
     /**
-     * @return PDO
+     * @return false|PDO
      */
-    public function connect(): PDO
+    public function connect(bool $throwOnError = true): false|PDO
     {
-        if (!in_array($this->driver, PDO::getAvailableDrivers(), true)) {
+        if ($throwOnError && !in_array($this->driver, PDO::getAvailableDrivers(), true)) {
             throw new InvalidArgumentException(
                 "PDO driver '{$this->driver}' not available"
             );
         }
 
-        $dsn = $this->createDSN();
+        try {
+            $dsn = $this->createDSN();
+            $this->pdo = new PDO($dsn, $this->config->getUsername(), $this->config->getPassword());
+            foreach ($this->config->getAttributes() as $key => $value) {
+                $this->getPDO()->setAttribute($key, $value);
+            }
 
-        $this->pdo = new PDO($dsn, $this->config->getUsername(), $this->config->getPassword());
-        foreach ($this->config->getAttributes() as $key => $value) {
-            $this->getPDO()->setAttribute($key, $value);
+            $this->onConnected();
+            return $this->pdo;
         }
+        catch(PDOException $ex) {
+            if ($throwOnError)
+                throw $ex;
 
-        $this->onConnected();
-
-        return $this->pdo;
+            return false;
+        }
     }
 
     /**

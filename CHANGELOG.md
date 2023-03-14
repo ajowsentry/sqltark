@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2023-03-15
+
+### Added
+- Add `SqlTark\Manager\DbManager` class to manage multiple db configuration
+
+### Fixed
+- Fix paging implementation for SqlServer compiler
+
 ## [0.9.0] - 2023-03-13
 
 ### Added

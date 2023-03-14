@@ -6,7 +6,7 @@ namespace SqlTark\Connection;
 
 use PDO;
 
-final class Config
+class Config
 {
     /**
      * @var string $host
