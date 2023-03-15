@@ -138,7 +138,7 @@ class XQuery extends Query
             $statement = $pdo->prepare($sql);
             foreach($params as $index => $value) {
                 $type = $this->determineType($index, $value, $types);
-                $statement->bindValue($index, $value, $type);
+                $statement->bindValue(1 + $index, $value, $type);
             }
 
             return $statement;

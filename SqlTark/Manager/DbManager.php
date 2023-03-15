@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace SqlTark\Manager;
 
-use PDOException;
-use RuntimeException;
-use SqlTark\Compiler\AbstractCompiler;
-use SqlTark\Compiler\MySqlCompiler;
-use SqlTark\Compiler\SqlServerCompiler;
-use SqlTark\Connection\AbstractConnection;
-use SqlTark\Connection\MySqlConnection;
-use SqlTark\Connection\SqlServerConnection;
 use SqlTark\XQuery;
+use RuntimeException;
+use SqlTark\Compiler\MySqlCompiler;
+use SqlTark\Compiler\AbstractCompiler;
+use SqlTark\Compiler\SqlServerCompiler;
+use SqlTark\Connection\MySqlConnection;
+use SqlTark\Connection\AbstractConnection;
+use SqlTark\Connection\SqlServerConnection;
 
 class DbManager
 {
