@@ -23,8 +23,8 @@ class SqlServerConnection extends AbstractConnection
         $database = $this->config->getDatabase();
 
         $dsn = "sqlsrv:Server={$host}";
-        if(!empty($port)) $dsn = "{$dsn},{$port}";
-        $dsn = "{$dsn};Database={$database}";
+        if(!empty($port)) $dsn .= ",{$port}";
+        $dsn .= ";Database={$database};TrustServerCertificate=1;";
         return $dsn;
     }
 
