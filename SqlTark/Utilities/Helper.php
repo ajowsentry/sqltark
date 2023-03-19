@@ -193,5 +193,13 @@ final class Helper
         return $result;
     }
 
+    /**
+     * @return bool
+     */
+    public static function isOSWindows(): bool
+    {
+        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    }
+
     private function __construct() { }
 }

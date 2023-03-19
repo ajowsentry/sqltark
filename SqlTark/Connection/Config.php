@@ -11,42 +11,37 @@ class Config
     /**
      * @var string $host
      */
-    private string $host = 'localhost';
+    protected string $host = 'localhost';
 
     /**
      * @var ?int $port
      */
-    private ?int $port = null;
+    protected ?int $port = null;
 
     /**
      * @var string $username
      */
-    private string $username = '';
-    
+    protected string $username = '';
+
     /**
      * @var string $password
      */
-    private string $password = '';
+    protected string $password = '';
 
     /**
      * @var string $database
      */
-    private string $database = '';
+    protected string $database = '';
 
     /**
-     * @var string $charset
+     * @var array<string,mixed> $extras
      */
-    private string $charset = 'utf8';
-
-    /**
-     * @var string $collation
-     */
-    private string $collation = 'utf8_general_ci';
+    protected array $extras = [];
 
     /**
      * @var array<int,mixed> $attributes
      */
-    private array $attributes = [
+    protected array $attributes = [
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     ];
@@ -58,31 +53,30 @@ class Config
     {
         if (!empty($config['host'])) {
             $this->host = $config['host'];
+            unset($config['host']);
         }
 
         if (!empty($config['port'])) {
             $this->port = (int) $config['port'];
+            unset($config['port']);
         }
 
         if (!empty($config['username'])) {
             $this->username = $config['username'];
+            unset($config['username']);
         }
 
         if (!empty($config['password'])) {
             $this->password = $config['password'];
+            unset($config['password']);
         }
 
         if (!empty($config['database'])) {
             $this->database = $config['database'];
+            unset($config['database']);
         }
 
-        if (!empty($config['charset'])) {
-            $this->charset = $config['charset'];
-        }
-
-        if (!empty($config['collation'])) {
-            $this->collation = $config['collation'];
-        }
+        $this->extras = $config;
 
         if (!empty($config['attributes'])) {
             $this->attributes = array_merge($this->attributes, $config['attributes']);
@@ -130,22 +124,6 @@ class Config
     }
 
     /**
-     * @return string
-     */
-    public function getCharset(): string
-    {
-        return $this->charset;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCollation(): string
-    {
-        return $this->collation;
-    }
-
-    /**
      * @return array<int,mixed>
      */
     public function getAttributes(): array
@@ -163,7 +141,7 @@ class Config
     }
 
     /**
-     * @return PDO::FETCH_*
+     * @return int
      */
     public function getFetchMode(): int
     {
@@ -216,24 +194,6 @@ class Config
     }
 
     /**
-     * @param string $value
-     * @return void
-     */
-    public function setCharset(string $value): void
-    {
-        $this->charset = $value;
-    }
-
-    /**
-     * @param string $value
-     * @return void
-     */
-    public function setCollation(string $value): void
-    {
-        $this->collation = $value;
-    }
-
-    /**
      * @param array<int,mixed> $value
      * @return void
      */
@@ -268,5 +228,21 @@ class Config
     public function setFetchMode(int $value): void
     {
         $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, $value);
+    }
+
+    /**
+     * @param string|list<string> $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getExtras(string|array $key, mixed $default = null): mixed
+    {
+        $keys = (array) $key;
+
+        foreach($keys as $key)
+            if(array_key_exists($key, $this->extras))
+                return $this->extras[$key];
+
+        return $default;
     }
 }

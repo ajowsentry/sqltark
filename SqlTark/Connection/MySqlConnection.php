@@ -19,10 +19,14 @@ class MySqlConnection extends AbstractConnection
         $host = $this->config->getHost();
         $port = $this->config->getPort();
         $database = $this->config->getDatabase();
+        $charset = $this->config->getExtras('charset', 'utf8');
 
-        $dsn = "mysql:host={$host}";
-        if(!empty($port)) $dsn .= ":{$port};port={$port}";
-        return "{$dsn};dbname={$database}";
+        $dsn = "mysql:host={$host};dbname={$database};charset={$charset}";
+        if(!is_null($port)) {
+            $dsn .= ";port={$port}";
+        }
+
+        return $dsn;
     }
 
     /**
@@ -30,11 +34,10 @@ class MySqlConnection extends AbstractConnection
      */
     protected function onConnected(): void
     {
-        $charset = $this->config->getCharset();
-        $collation = $this->config->getCollation();
+        $charset = $this->config->getExtras('charset', 'utf8');
+        $collation = $this->config->getExtras('collation', 'utf8_unicode_ci');
 
         $this->pdo->exec("SET NAMES '{$charset}' COLLATE '{$collation}'");
-        $this->pdo->exec("SET CHARACTER SET '{$charset}'");
     }
 
     /**

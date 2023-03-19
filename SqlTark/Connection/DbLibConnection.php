@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace SqlTark\Connection;
 
+use SqlTark\Utilities\Helper;
 use SqlTark\Connection\AbstractConnection;
 
-class SqlServerDbLibConnection extends AbstractConnection
+class DbLibConnection extends AbstractConnection
 {
     /**
      * {@inheritdoc}
@@ -22,7 +23,21 @@ class SqlServerDbLibConnection extends AbstractConnection
         $port = $this->config->getPort();
         $database = $this->config->getDatabase();
 
-        return "dblib:host={$host}:{$port};dbname={$database}";
+        $dsn = "dblib:host={$host}";
+        if(!is_null($port)) {
+            $dsn .= Helper::isOSWindows() ? ",{$port}" : ":{$port}";
+        }
+
+        $dsn .= ";dbname={$database}";
+        if(!is_null($charset = $this->config->getExtras('charset'))) {
+            $dsn .= ";charset={$charset}";
+        }
+
+        if(!is_null($appName = $this->config->getExtras(['appname', 'appName']))) {
+            $dsn .= ";appname={$appName}";
+        }
+
+        return $dsn;
     }
 
     /**
