@@ -33,7 +33,7 @@ class LikeCondition extends AbstractCondition
     /**
      * @var ?string $escapeCharacter
      */
-    protected ?string $escapeCharacter;
+    protected ?string $escapeCharacter = null;
 
     /**
      * @return bool

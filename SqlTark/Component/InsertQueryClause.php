@@ -17,7 +17,7 @@ class InsertQueryClause extends AbstractInsert
     /**
      * @var ?list<string> $columns
      */
-    protected ?iterable $columns;
+    protected ?iterable $columns = null;
 
     /**
      * @return Query

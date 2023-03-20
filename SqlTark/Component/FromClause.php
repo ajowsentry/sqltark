@@ -37,8 +37,9 @@ class FromClause extends AbstractFrom
             $pair = Helper::extractAlias($this->table);
             return $pair[1] ?? $pair[0];
         }
-        elseif ($this->table instanceof Query) {
-            return $this->table->getAlias();
+
+        elseif ($this->table instanceof Query && !is_null($alias = $this->table->getAlias())) {
+            return $alias;
         }
 
         return $this->alias ?? '';
