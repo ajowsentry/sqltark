@@ -242,6 +242,9 @@ class XQuery extends Query
                 ? $statement->fetch(PDO::FETCH_ASSOC)
                 : $statement->fetch();
 
+            if(false === $result)
+                return null;
+
             return !is_null($class)
                 ? new $class($result)
                 : $result;
