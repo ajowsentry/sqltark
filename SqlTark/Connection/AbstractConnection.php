@@ -26,7 +26,7 @@ abstract class AbstractConnection
     protected Config $config;
 
     /**
-     * @var int $fetchMode
+     * @var int $transactionCount
      */
     protected int $transactionCount = 0;
 

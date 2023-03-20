@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace SqlTark\Connection;
 
-use SqlTark\Connection\AbstractConnection;
 use SqlTark\Utilities\Helper;
+use SqlTark\Connection\AbstractConnection;
 
 class SqlServerConnection extends AbstractConnection
 {
@@ -19,13 +19,14 @@ class SqlServerConnection extends AbstractConnection
      */
     protected function createDSN(): string
     {
+        // return "odbc:Driver={ODBC Driver 18 for SQL Server};Server=172.16.0.101;Database=Billing;Encrypt=No";
         $host = $this->config->getHost();
         $port = $this->config->getPort();
         $database = $this->config->getDatabase();
 
-        $dsn = "sqlsrv:Server={$host}";
+        $dsn = "Server={$host}";
         if(!is_null($port)) {
-            $dsn .= Helper::isOSWindows() ? ",{$port}" : ":{$port}";
+            $dsn .= ",{$port}";
         }
 
         $dsn .= ";Database={$database}";
@@ -33,12 +34,11 @@ class SqlServerConnection extends AbstractConnection
         $connectionPooling = $this->config->getExtras(['connectionPooling', 'connection_pooling']);
         if(!is_null($connectionPooling)) {
             $connectionPooling = intval($connectionPooling);
-            $dsn .= ";connectionPooling={$connectionPooling}";
+            $dsn .= ";ConnectionPooling={$connectionPooling}";
         }
 
         $encrypt = $this->config->getExtras('encrypt');
         if(!is_null($encrypt)) {
-            $encrypt = intval($encrypt);
             $dsn .= ";Encrypt={$encrypt}";
         }
 
@@ -59,7 +59,6 @@ class SqlServerConnection extends AbstractConnection
 
         $quotedID = $this->config->getExtras(['quotedID', 'quoted_id']);
         if(!is_null($quotedID)) {
-            $quotedID = intval($quotedID);
             $dsn .= ";QuotedId={$quotedID}";
         }
 
@@ -70,7 +69,6 @@ class SqlServerConnection extends AbstractConnection
 
         $traceOn = $this->config->getExtras(['traceOn', 'trace_on']);
         if(!is_null($traceOn)) {
-            $traceOn = intval($traceOn);
             $dsn .= ";TraceOn={$traceOn}";
         }
 
@@ -81,13 +79,22 @@ class SqlServerConnection extends AbstractConnection
 
         $trustServerCertificate = $this->config->getExtras(['trustServerCertificate', 'trust_server_certificate']);
         if(!is_null($trustServerCertificate)) {
-            $trustServerCertificate = intval($trustServerCertificate);
             $dsn .= ";TrustServerCertificate={$trustServerCertificate}";
         }
 
         $wsid = $this->config->getExtras('wsid');
         if(!is_null($wsid)) {
             $dsn .= ";WSID={$wsid}";
+        }
+
+        $odbcDriver = $this->config->getExtras(['odbcDriver', 'odbc_driver']);
+        if(!is_null($odbcDriver)) {
+            $dsn = "odbc:Driver={{$odbcDriver}};$dsn;";
+            $this->driver = 'odbc';
+        }
+        else {
+            $dsn = "sqlsrv:$dsn;";
+            $this->driver = 'sqlsrv';
         }
 
         return $dsn;
