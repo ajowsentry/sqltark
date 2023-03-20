@@ -9,12 +9,12 @@ final class Variable extends AbstractExpression
     /**
      * @var ?string $name
      */
-    protected ?string $name;
+    protected ?string $name = null;
     
     /**
      * @var ?string $alias
      */
-    private ?string $alias;
+    private ?string $alias = null;
 
     /**
      * @return ?string

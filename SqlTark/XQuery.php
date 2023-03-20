@@ -16,7 +16,7 @@ class XQuery extends Query
     /**
      * @var ?AbstractConnection $connection
      */
-    private ?AbstractConnection $connection;
+    private ?AbstractConnection $connection = null;
 
     /**
      * @var bool $resetOnExecute

@@ -9,7 +9,7 @@ abstract class AbstractExpression
     /**
      * @var ?string $wrap
      */
-    protected ?string $wrap;
+    protected ?string $wrap = null;
 
     /**
      * @return ?string

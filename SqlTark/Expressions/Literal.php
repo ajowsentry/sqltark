@@ -11,12 +11,12 @@ final class Literal extends AbstractExpression
     /**
      * @var null|scalar|DateTimeInterface $value
      */
-    private mixed $value;
+    private mixed $value = null;
     
     /**
      * @var ?string $alias
      */
-    private ?string $alias;
+    private ?string $alias = null;
 
     /**
      * @return null|scalar|DateTimeInterface $value

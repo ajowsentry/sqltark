@@ -12,7 +12,7 @@ trait BaseFrom
     /**
      * @var ?string $alias
      */
-    protected ?string $alias;
+    protected ?string $alias = null;
 
     /**
      * @return ?string
