@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.5] - 2023-03-20
 
+### Added
+- Add ODBC Driver for SQL Server connection
+
+## [0.9.5] - 2023-03-20
+
 ### Changed
 - Change `SqlTark\Connection\SqlServerConnection` implementation
 
