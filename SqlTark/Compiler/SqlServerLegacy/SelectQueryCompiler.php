@@ -556,7 +556,7 @@ trait SelectQueryCompiler
             if($result) $result .= ', ';
             else $result .= 'WITH ';
 
-            $result .= $fromClause->getAlias();
+            $result .= $this->wrapIdentifier($fromClause->getAlias());
 
             if($fromClause instanceof FromClause) {
                 $query = $fromClause->getTable();
