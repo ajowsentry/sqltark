@@ -11,6 +11,9 @@ use SqlTark\Compiler\AbstractCompiler;
 use SqlTark\Compiler\SqlServerCompiler;
 use SqlTark\Connection\MySqlConnection;
 use SqlTark\Connection\AbstractConnection;
+use SqlTark\Connection\DbLibConnection;
+use SqlTark\Connection\OracleConnection;
+use SqlTark\Connection\PostgresConnection;
 use SqlTark\Connection\SqlServerConnection;
 
 class DbManager
@@ -99,6 +102,18 @@ class DbManager
             case 'sqlsrv':
             case SqlServerConnection::class:
             return new SqlServerConnection($config);
+
+            case 'dblib':
+            case DbLibConnection::class:
+            return new DbLibConnection($config);
+
+            case 'oci':
+            case OracleConnection::class:
+            return new OracleConnection($config);
+
+            case 'pgsql':
+            case PostgresConnection::class:
+            return new PostgresConnection($config);
         }
 
         if(class_exists($driver) && is_subclass_of($driver, AbstractConnection::class)) {
@@ -121,6 +136,7 @@ class DbManager
             return new MySqlCompiler;
 
             case 'sqlsrv':
+            case 'dblib':
             case SqlServerCompiler::class:
             return new SqlServerCompiler;
         }

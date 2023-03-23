@@ -27,14 +27,7 @@ class PostgresConnection extends AbstractConnection
             $dsn .= ";port={$port}";
         }
 
-        $dsn .= ";dbname={$database}";
-        if(!is_null($user = $this->config->getUsername())) {
-            $dsn .= ";user={$user}";
-        }
-
-        if(!is_null($password = $this->config->getPassword())) {
-            $dsn .= ";password={$password}";
-        }
+        $dsn .= ";dbname={$database};user=" . $this->config->getUsername() . ";password=" . $this->config->getPassword();
 
         if(!is_null($sslmode = $this->config->getExtras('sslmode'))) {
             $dsn .= ";sslmode={$sslmode}";

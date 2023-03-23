@@ -6,7 +6,7 @@ namespace SqlTark\Connection;
 
 use SqlTark\Connection\AbstractConnection;
 
-class DbLibConnection extends AbstractConnection
+class OracleConnection extends AbstractConnection
 {
     /**
      * {@inheritdoc}

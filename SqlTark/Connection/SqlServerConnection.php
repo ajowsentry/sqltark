@@ -19,7 +19,6 @@ class SqlServerConnection extends AbstractConnection
      */
     protected function createDSN(): string
     {
-        // return "odbc:Driver={ODBC Driver 18 for SQL Server};Server=172.16.0.101;Database=Billing;Encrypt=No";
         $host = $this->config->getHost();
         $port = $this->config->getPort();
         $database = $this->config->getDatabase();
