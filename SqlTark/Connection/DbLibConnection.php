@@ -23,7 +23,7 @@ class DbLibConnection extends AbstractConnection
         $port = $this->config->getPort();
         $database = $this->config->getDatabase();
 
-        $dsn = "dblib:host={$host}";
+        $dsn = "host={$host}";
         if(!is_null($port)) {
             $dsn .= Helper::isOSWindows() ? ",{$port}" : ":{$port}";
         }
@@ -37,7 +37,11 @@ class DbLibConnection extends AbstractConnection
             $dsn .= ";appname={$appName}";
         }
 
-        return $dsn;
+        if(!is_null($dblibDriver = $this->config->getExtras(['dblibDriver', 'dblib_driver']))) {
+            $this->driver = $dblibDriver;
+        }
+
+        return "{$this->driver}:{$dsn}";
     }
 
     /**
