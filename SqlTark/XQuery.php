@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace SqlTark;
 
+use Generator;
 use PDO;
-use PDOStatement;
+use PDOException;
 use SqlTark\Query\MethodType;
 use SqlTark\Utilities\Helper;
 use SqlTark\Query\QueryInterface;
@@ -24,7 +25,7 @@ class XQuery extends Query
     private bool $resetOnExecute = true;
 
     /**
-     * @var null|(callable(string,?array<mixed>,?PDOStatement):void) $onExecuteCallback
+     * @var null|(callable(string,?array<mixed>,?XPDOStatement):void) $onExecuteCallback
      */
     private mixed $onExecuteCallback = null;
 
@@ -55,7 +56,7 @@ class XQuery extends Query
     }
 
     /**
-     * @param (callable(string,?array<mixed>,?PDOStatement):void) $onExecuteCallback
+     * @param (callable(string,?array<mixed>,?XPDOStatement):void) $onExecuteCallback
      * @return static Self object
      */
     public function onExecute(callable $onExecuteCallback): static
@@ -113,9 +114,9 @@ class XQuery extends Query
      * @param null|Query|string $query
      * @param list<mixed> $params
      * @param list<mixed> $types
-     * @return PDOStatement Statement
+     * @return XPDOStatement Statement
      */
-    public function prepare(null|Query|string $query = null, array $params = [], array $types = []): PDOStatement
+    public function prepare(null|Query|string $query = null, array $params = [], array $types = []): XPDOStatement
     {
         if(func_num_args() === 0) {
             $query = $this->compiler->compileQuery($this);
@@ -135,7 +136,15 @@ class XQuery extends Query
         try {
             $pdo = $this->connection->getPDO();
 
-            $statement = $pdo->prepare($sql);
+            /** @var false|XPDOStatement $statement */
+            $statement = $pdo->prepare($sql, [
+                PDO::ATTR_STATEMENT_CLASS => [XPDOStatement::class]
+            ]);
+
+            if(false === $statement) {
+                $this->throwPDOException();
+            }
+
             foreach($params as $index => $value) {
                 $type = $this->determineType($index, $value, $types);
                 $statement->bindValue(1 + $index, $value, $type);
@@ -154,9 +163,9 @@ class XQuery extends Query
      * @param null|Query|string $query
      * @param list<mixed> $params
      * @param list<mixed> $types
-     * @return PDOStatement Statement
+     * @return XPDOStatement Statement
      */
-    public function execute(null|Query|string $query = null, array $params = [], array $types = []): PDOStatement
+    public function execute(null|Query|string $query = null, array $params = [], array $types = []): XPDOStatement
     {
         if ($query instanceof QueryInterface) {
             $sql = $this->compiler->compileQuery($query);
@@ -173,8 +182,20 @@ class XQuery extends Query
         }
 
         try {
-            $statement = $this->prepare($sql, $params, $types);
-            $statement->execute();
+            if(count($params) === 0) {
+                /** @var false|XPDOStatement $statement */
+                $statement = $this->getConnection()->getPDO()->query($sql);
+
+                if(false === $statement) {
+                    $this->throwPDOException();
+                }
+            }
+            else {
+                $statement = $this->prepare($sql, $params, $types);
+                if(false === $statement->execute()) {
+                    $this->throwPDOException();
+                }
+            }
 
             return $statement;
         }
@@ -261,15 +282,15 @@ class XQuery extends Query
      */
     public function getAll(?string $class = null): array
     {
-        return iterator_to_array($this->getIterate($class));
+        return iterator_to_array($this->getIterate($class), false);
     }
 
     /**
      * @template T
      * @param ?class-string<T> $class
-     * @return iterable<T>
+     * @return Generator<int,T,null,void>
      */
-    public function getIterate(?string $class = null): iterable
+    public function getIterate(?string $class = null): Generator
     {
         $this->method = MethodType::Select;
         $statement = $this->execute($this);
@@ -309,13 +330,25 @@ class XQuery extends Query
     /**
      * @param string $sql
      * @param ?list<mixed> $errorInfo
-     * @param ?PDOStatement $statement
+     * @param ?XPDOStatement $statement
      * @return void
      */
-    private function triggerOnExecute(string $sql, ?array $errorInfo = null, ?PDOStatement $statement = null): void
+    private function triggerOnExecute(string $sql, ?array $errorInfo = null, ?XPDOStatement $statement = null): void
     {
         if(is_callable($this->onExecuteCallback)) {
             call_user_func_array($this->onExecuteCallback, [$sql, $errorInfo, $statement]);
         }
+    }
+
+    private function throwPDOException(): never
+    {
+        $pdo = $this->getConnection()->getPDO();
+        [$sqlState, $errCode, $errMessage] = $pdo->errorInfo();
+        $exMessage = sprintf(
+            "SQLSTATE[%s]: Syntax error or access violation: %s %s",
+            $sqlState, $errCode, $errMessage,
+        );
+
+        throw new PDOException($exMessage, $errCode);
     }
 }
