@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace SqlTark;
 
-use Generator;
+use Closure;
 use PDO;
+use Generator;
 use PDOException;
 use SqlTark\Query\MethodType;
 use SqlTark\Utilities\Helper;
@@ -325,6 +326,52 @@ class XQuery extends Query
         $statement->closeCursor();
 
         return $result;
+    }
+
+    /**
+     * @return XPDOStatement
+     */
+    public function delete(): XPDOStatement
+    {
+        return $this->asDelete()->execute();
+    }
+
+    /**
+     * @param array<string,null|scalar|DateTimeInterface|AbstractExpression|Query> $keyValues
+     * @return XPDOStatement
+     */
+    public function insert(array $keyValues): XPDOStatement
+    {
+        return $this->asInsert($keyValues)->execute();
+    }
+
+    /**
+     * @param list<string> $columns
+     * @param list<list<AbstractExpression|Query>> $values
+     * @return XPDOStatement
+     */
+    public function bulkInsert(iterable $columns, iterable $values): XPDOStatement
+    {
+        return $this->asBulkInsert($columns, $values)->execute();
+    }
+
+    /**
+     * @param (Closure(Query):void)|Query $query
+     * @param ?list<string> $columns
+     * @return XPDOStatement
+     */
+    public function insertWith(Closure|Query $query, ?iterable $columns = null): XPDOStatement
+    {
+        return $this->asInsertWith($query, $columns)->execute();
+    }
+
+    /**
+     * @param array<string,null|scalar|DateTimeInterface|AbstractExpression|Query> $keyValues
+     * @return XPDOStatement
+     */
+    public function update(array $keyValues): XPDOStatement
+    {
+        return $this->asUpdate($keyValues)->execute();
     }
 
     /**
